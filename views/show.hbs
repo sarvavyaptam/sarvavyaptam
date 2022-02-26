@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="description"
+    content="Welcome to Vidyavantam - Comprehensive online live classes to impart knowledge to students for academic and competitive exams" />
+  <title>Vidyavantam - Contact Us</title>
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+  {{>nav}}
+  {{>backtotop}}
+  <section class="text-gray-600 body-font">
+    <div class="container px-5 mx-auto" style="padding-top:20px; padding-bottom:40px;">
+      <h1 class="mb-4 text-4xl text-black dark:text-gray-400 text-center">Shop</h1>
+      <div class="flex flex-wrap -m-4">
+        {{#each items}}
+        <a class="p-4 md:mb-2 w-full xs:w-1/2 lg:mb-0 lg:w-1/4 md:w-1/2 sm:w-1/2"
+          href="/shop/{{this.category}}/{{this.id}}">
+          <div
+            class="hover:shadow-lg transition-shadow h-full border-2 border-gray-200 dark:border-gray-700 border-opacity-60 rounded-lg overflow-hidden">
+            <img class="w-full object-cover object-center" alt="{{this.name}}"
+              data-src={{this.image}}>
+            <div class="pt-6 pr-6 pl-6">
+              <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1"
+                style="display: block; text-transform: uppercase;">CATEGORY - {{this.category}}</h2>
+              <h1 class="title-font text-md font-medium dark:text-white text-gray-800 mb-3">{{this.name}}</h1>
+              <p class="leading-relaxed dark:text-gray-300 mb-3"></p>
+              <p class="title-font text-md text-right text-md dark:text-white text-gray-800 mb-3">₹{{this.price}} <span
+                  class="dark:text-gray-400 text-sm line-through">₹{{this.cut}}</span> <span class="text-sm text-green-500">{{off this.price this.cut}}%
+                  off</span></p>
+              <p class="leading-relaxed"></p>
+            </div>
+          </div>
+        </a>
+        {{/each}}
+      </div>
+    </div>
+  </section>
+  {{>footer}}
+  <script src="/js/script.js"></script>
+</body>
+
+</html>

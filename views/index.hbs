@@ -6,23 +6,16 @@
   <link rel="icon" href="/favicon.ico" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#000000" />
-  <meta name="description" content="Sarvavyaptam - Best online store in Arjangarh" />
+  <meta name="description" content="Sarvavyaptam - Best online store" />
   <link rel="apple-touch-icon" href="/logo192.png" />
   <link rel="manifest" href="/manifest.json" />
-  <title>Sarvavyaptam - Best online store in Arjangarh</title>
+  <title>Sarvavyaptam - Best online store</title>
   <link href="/css/style.css" rel="stylesheet">
 </head>
 
 <body>
   {{>nav}}
-  <div id="back-to-top-btn" class="btnExit btb-container">
-    <div class="btb-top">
-      <div><svg viewBox="0 0 24 24" class="btb-icon">
-          <path d="M7.997 10l3.515-3.79a.672.672 0 0 1 .89-.076l.086.075L16 10 13 10.001V18h-2v-7.999L7.997 10z">
-          </path>
-        </svg></div>
-    </div>
-  </div>
+  {{>backtotop}}
   <section class="bg-white text-gray-600 body-font dark:bg-gray-900">
     <div class="container mx-auto flex px-5 py-24 md:flex-row md:flex-reverse flex-col items-center">
       <div
@@ -37,67 +30,13 @@
             More</a></div>
       </div>
       <div class="lg:max-w-lg lg:w-full hidden md:block md:w-1/2 w-5/6"><img class="object-cover object-center rounded"
-          alt="image" src="/image"></div>
+          alt="image" data-src="/image"></div>
     </div>
   </section>
   <section id="items" class="pt-10 bg-white dark:bg-gray-900">
     <section class="text-gray-600 body-font">
       <div class="container px-5 pt-24 mx-auto">
-        <h1 class="text-3xl dark:text-gray-200 text-gray-900 font-medium title-font mb-7 text-center">
-          Categories</h1>
-        <div class="flex flex-wrap -m-4"><a
-            class="pl-4 pr-4 pt-4 md:mb-2 w-full xs:w-1/2 lg:mb-0 lg:w-1/4 md:w-1/2 sm:w-1/2" href="/shop/groceries">
-            <div
-              class="hover:shadow-lg transition-shadow h-full border-2 border-gray-200 dark:border-gray-700 border-opacity-60 rounded-lg overflow-hidden">
-              <img class="lg:h-48 md:h-36 w-full object-cover object-center" alt="GROCERIES"
-                src="https://c1.staticflickr.com/1/65535/48369161816_f609bf5a71_b.jpg">
-              <div class="pt-6 pr-6 pl-6">
-                <h1 class="title-font text-md font-medium dark:text-gray-100 text-gray-800 mb-3">
-                  GROCERIES</h1>
-                <p class="leading-relaxed dark:text-gray-300 mb-4">Get Fresh groceries at best price
-                  to your home</p>
-              </div>
-            </div>
-          </a><a class="pl-4 pr-4 pt-4 md:mb-2 w-full xs:w-1/2 lg:mb-0 lg:w-1/4 md:w-1/2 sm:w-1/2"
-            href="/shop/stationary">
-            <div
-              class="hover:shadow-lg transition-shadow h-full border-2 border-gray-200 dark:border-gray-700 border-opacity-60 rounded-lg overflow-hidden">
-              <img class="lg:h-48 md:h-36 w-full object-cover object-center" alt="STATIONARY"
-                src="https://th.bing.com/th/id/OIP.xqanhPWMYfhw40-CRBRoywHaFt?pid=ImgDet&amp;w=500&amp;h=386&amp;rs=1">
-              <div class="pt-6 pr-6 pl-6">
-                <h1 class="title-font text-md font-medium dark:text-gray-100 text-gray-800 mb-3">
-                  STATIONARY</h1>
-                <p class="leading-relaxed dark:text-gray-300 mb-4">Get all stationary items at best
-                  price to your home</p>
-              </div>
-            </div>
-          </a><a class="pl-4 pr-4 pt-4 md:mb-2 w-full xs:w-1/2 lg:mb-0 lg:w-1/4 md:w-1/2 sm:w-1/2"
-            href="/shop/computer-accessories">
-            <div
-              class="hover:shadow-lg transition-shadow h-full border-2 border-gray-200 dark:border-gray-700 border-opacity-60 rounded-lg overflow-hidden">
-              <img class="lg:h-48 md:h-36 w-full object-cover object-center" alt="COMPUTER ACCESSORIES"
-                src="https://th.bing.com/th/id/R.8c255bed865cd0c9c58821e72ecc5547?rik=4umteFfw%2fwg2rg&amp;riu=http%3a%2f%2f1.bp.blogspot.com%2f-XF6tqjvS0_U%2fVPF8bOadDVI%2fAAAAAAAAAoA%2fX0aTKN4Ntf8%2fs1600%2fecho15tbdock_peripherals.png&amp;ehk=O1rR9kr3GBNaAnY3JjUIEa5n%2fpiegO5MWjstb%2fiAiGs%3d&amp;risl=&amp;pid=ImgRaw&amp;r=0&amp;sres=1&amp;sresct=1">
-              <div class="pt-6 pr-6 pl-6">
-                <h1 class="title-font text-md font-medium dark:text-gray-100 text-gray-800 mb-3">
-                  COMPUTER ACCESSORIES</h1>
-                <p class="leading-relaxed dark:text-gray-300 mb-4">Get computer accessories with
-                  best quality and brands at best price</p>
-              </div>
-            </div>
-          </a><a class="pl-4 pr-4 pt-4 md:mb-2 w-full xs:w-1/2 lg:mb-0 lg:w-1/4 md:w-1/2 sm:w-1/2"
-            href="/shop/computer-accessories">
-            <div
-              class="hover:shadow-lg transition-shadow h-full border-2 border-gray-200 dark:border-gray-700 border-opacity-60 rounded-lg overflow-hidden">
-              <img class="lg:h-48 md:h-36 w-full object-cover object-center" alt="HOME AND KITECHEN"
-                src="https://as2.ftcdn.net/v2/jpg/00/89/54/09/1000_F_89540935_pY6nsh5Vsz5dUSDnQ2FhuRJjI1bFjIVP.jpg">
-              <div class="pt-6 pr-6 pl-6">
-                <h1 class="title-font text-md font-medium dark:text-gray-100 text-gray-800 mb-3">
-                  HOME AND KITECHEN</h1>
-                <p class="leading-relaxed dark:text-gray-300 mb-4">Get items used in home and
-                  kitchen at best price</p>
-              </div>
-            </div>
-          </a></div>
+        {{>shop title="Categories"}}
       </div>
     </section>
   </section>
@@ -166,6 +105,7 @@
     </form>
   </section>
   {{>footer}}
+  <script src="/js/script.js"></script>
 </body>
 
 </html>
