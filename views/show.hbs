@@ -3,20 +3,26 @@
 
 <head>
   <meta charset="utf-8" />
+  <link rel="icon" href="/favicon.ico" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#ffffff" />
-  <meta name="description"
-    content="Welcome to Vidyavantam - Comprehensive online live classes to impart knowledge to students for academic and competitive exams" />
-  <title>Vidyavantam - Contact Us</title>
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Sarvavyaptam - Best online store" />
+  <link rel="apple-touch-icon" href="/logo192.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>Vidyavantam - {{{name}}}</title>
   <link href="/css/style.css" rel="stylesheet">
 </head>
 
 <body>
+  {{#if_eq login 'nope'}}
   {{>nav}}
+  {{else}}
+  {{>navLogin name=login.name}}
+  {{/if_eq}}
   {{>backtotop}}
   <section class="text-gray-600 body-font">
     <div class="container px-5 mx-auto" style="padding-top:20px; padding-bottom:40px;">
-      <h1 class="mb-4 text-4xl text-black dark:text-gray-400 text-center">Shop</h1>
+      <h1 class="mb-4 text-4xl text-black dark:text-gray-400 text-center">{{{name}}}</h1>
       <div class="flex flex-wrap -m-4">
         {{#each items}}
         <a class="p-4 md:mb-2 w-full xs:w-1/2 lg:mb-0 lg:w-1/4 md:w-1/2 sm:w-1/2"

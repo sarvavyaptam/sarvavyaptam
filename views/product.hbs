@@ -9,7 +9,7 @@
   <meta name="description" content="Sarvavyaptam - Best online store" />
   <link rel="apple-touch-icon" href="/logo192.png" />
   <link rel="manifest" href="/manifest.json" />
-  <title>Vidyavantam - Contact Us</title>
+  <title>Sarvavyaptam - {{name}}</title>
   <link href="/css/style.css" rel="stylesheet">
 </head>
 
@@ -19,14 +19,8 @@
   {{else}}
   {{>navLogin name=login.name}}
   {{/if_eq}}
-  {{>backtotop}}
-  <section class="text-gray-600 body-font">
-    <div class="container px-5 mx-auto" style="padding-top:20px; padding-bottom:40px;">
-      {{>shop title="Shop"}}
-    </div>
-  </section>
+  {{{html}}}
   {{>footer}}
-  <script src="/js/script.js"></script>
 </body>
 
 </html>

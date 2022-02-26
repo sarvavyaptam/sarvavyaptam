@@ -4,9 +4,9 @@
   <div class="container flex flex-wrap justify-between items-center mx-auto"><a aria-current="page" class="flex active"
       href="/"><span class="self-center text-2xl whitespace-nowrap dark:text-white">Sarvavyaptam</span></a>
     <div type="button" data-collapse-toggle="mobile-menu"
-      class="cursor-pointer inline-flex items-center p-2 ml-3 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-      aria-controls="mobile-menu-2" aria-expanded="false"><span class="sr-only">Open main menu</span><svg
-        class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+      class="cursor-pointer inline-flex items-center p-2 ml-3 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" onclick="document.getElementById('nav-content').classList.toggle('hidden')"
+      aria-controls="mobile-menu-2" aria-expanded="false"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd"
           d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
           clip-rule="evenodd"></path>
@@ -27,40 +27,11 @@
         <li><a
             class="ml-6 text-lg hover:text-blue-700 dark:text-gray-400 block py-2 pr-4 pl-3 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:p-0 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
             href="/contact">Contact</a></li>
-        <div class="hidden lg:block"><a
-            class="dark:bg-slate-600 ml-6 dark:hover:bg-slate-500 inline-flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg"
-            type="button" href="/login">Login</a><a
-            class="dark:hover:bg-gray-400 ml-3 dark:bg-gray-300 inline-flex text-gray-700 bg-gray-100 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg"
-            type="button" href="/register">Register</a></div>
-        <div class="relative lg:hidden block">
-          <div><button id="headlessui-menu-button-3" type="button" aria-haspopup="true" aria-expanded="false">
-              <div>
-                <div type="button"
-                  class="flex cursor-pointer font-medium text-black rounded items-center px-3 py-2 border text-grey border-grey-dark dark:border-gray-700 hover:text-black hover:border-purple appearance-none focus:outline-none ml-2">
-                  <svg class="dark:fill-gray-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                    viewBox="0 0 24 24">
-                    <path
-                      d="M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 9c-2.67 0-8 1.34-8 4v2c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-2c0-2.66-5.33-4-8-4z">
-                    </path>
-                  </svg>
-                </div>
-              </div>
-            </button></div>
-        </div>
-        <div class="relative lg:block hidden">
-          <div><button id="headlessui-menu-button-6" type="button" aria-haspopup="true" aria-expanded="false">
-              <div>
-                <div type="button"
-                  class="flex cursor-pointer font-medium text-black rounded items-center px-3 py-2 border text-grey border-grey-dark dark:border-gray-700 hover:text-black hover:border-purple appearance-none focus:outline-none ml-2">
-                  <svg class="dark:fill-gray-500" width="24" height="24" focusable="false" aria-hidden="true"
-                    viewBox="0 0 24 24" data-testid="ShoppingCartOutlinedIcon" aria-label="fontSize large">
-                    <path
-                      d="M15.55 13c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.37-.66-.11-1.48-.87-1.48H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.45zM6.16 6h12.15l-2.76 5H8.53L6.16 6zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z">
-                    </path>
-                  </svg>
-                </div>
-              </div>
-            </button></div>
+        <div class="cursor-pointer">
+          <div type="button" style="padding: 0.65rem 0.87rem;"
+            class="cursor-pointer flex text-black rounded items-center border text-grey border-grey-dark dark:border-gray-700 hover:text-black hover:border-purple appearance-none focus:outline-none ml-3">
+            <p style="font-size:20px;">{{first name}}</p>
+          </div>
         </div>
         <div class="cursor-pointer">
           <div type="button"
@@ -79,8 +50,8 @@
   </div>
   <div class="md:hidden">
     <div
-      class="w-full flex-grow lg:flex lg:flex-1 lg:content-center lg:justify-end lg:w-auto lg:h-auto overflow-hidden mt-2 lg:mt-0 z-20 transition-all"
-      id="nav-content" style="display: none;">
+      class="w-full hidden flex-grow lg:flex lg:flex-1 lg:content-center lg:justify-end lg:w-auto lg:h-auto overflow-hidden mt-2 lg:mt-0 z-20 transition-all"
+      id="nav-content">
       <ul class="flex items-center flex-col lg:flex-row">
         <li
           class="dark:block py-2 pr-4 pl-3 text-gray-700 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent mx-2 my-2">
@@ -93,15 +64,25 @@
         <li
           class="dark:block py-2 pr-4 pl-3 text-gray-700 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent mx-2 my-2">
           <a href="/contact">Contact</a>
-        </li><a
-          class="mb-2 dark:hover:bg-gray-400 ml-3 dark:bg-gray-300 inline-flex text-gray-700 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg"
-          href="/my-cart">MyCart</a><a
-          class="mb-2 dark:hover:bg-gray-400 ml-3 dark:bg-gray-300 inline-flex text-gray-700 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg"
-          href="/my-orders">MyOrders</a>
-        <a class="dark:bg-slate-600 ml-6 dark:hover:bg-slate-500 inline-flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg"
-          type="button" href="/login">Login</a>
-        <a class="mt-2 dark:hover:bg-gray-400 ml-3 dark:bg-gray-300 inline-flex text-gray-700 bg-gray-100 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg"
-          type="button" href="/register">Register</a>
+        </li>
+        <li class="relative w-full" style="display: flex; flex-direction: column; align-items: center;">
+          <div type="button" style="padding: 0.4rem 1rem;"
+            class="cursor-pointer flex text-black rounded items-center border text-grey border-grey-dark dark:border-gray-700 hover:text-black hover:border-purple appearance-none focus:outline-none ml-3">
+            <p style="font-size:20px;">{{first name}}</p>
+          </div>
+          <div class="w-full right-0 p-2 mt-1 bg-gray-100 rounded-md dark:bg-gray-800"
+            style="display: none; z-index: 100;">
+            <ul class="space-y-2 lg:w-48"><a
+                class="w-full cursor-pointer dark:text-gray-400 flex p-2 font-medium text-gray-600 rounded-md dark:hover:bg-gray-600 dark:hover:text-gray-400 hover:bg-gray-200 hover:text-black text-lg"
+                href="/profile">Profile</a><a
+                class="w-full cursor-pointer dark:text-gray-400 flex p-2 font-medium text-gray-600 rounded-md dark:hover:bg-gray-600 dark:hover:text-gray-400 hover:bg-gray-200 hover:text-black text-lg"
+                href="/my-cart">Cart</a><a
+                class="w-full cursor-pointer dark:text-gray-400 flex p-2 font-medium text-gray-600 rounded-md dark:hover:bg-gray-600 dark:hover:text-gray-400 hover:bg-gray-200 hover:text-black text-lg"
+                href="/my-orders">Orders</a><a
+                class="w-full cursor-pointer dark:text-gray-400 flex p-2 font-medium text-gray-600 rounded-md dark:hover:bg-gray-600 dark:hover:text-gray-400 hover:bg-gray-200 hover:text-black text-lg"
+                href="/logout">Logout</a></ul>
+          </div>
+        </li>
         <div class="container px-5 py-3 mx-auto">
           <form class="flex"><input type="text" placeholder="Search Here" name="name"
               class="dark:text-gray-300 dark:bg-gray-800 dark:border-gray-700 focus:border-indigo-500 dark:focus:bg-gray-900 dark:focus:ring-indigo-900 w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"

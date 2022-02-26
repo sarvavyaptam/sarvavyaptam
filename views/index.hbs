@@ -14,7 +14,11 @@
 </head>
 
 <body>
+  {{#if_eq login 'nope'}}
   {{>nav}}
+  {{else}}
+  {{>navLogin name=login.name}}
+  {{/if_eq}}
   {{>backtotop}}
   <section class="bg-white text-gray-600 body-font dark:bg-gray-900">
     <div class="container mx-auto flex px-5 py-24 md:flex-row md:flex-reverse flex-col items-center">

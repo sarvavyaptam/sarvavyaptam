@@ -1,25 +1,26 @@
 const jwt = require("jsonwebtoken")
-const signUp = require("../models/User")
-const authenticate = async (req, res, next) => {
-    try {
-        const token = req.cookies.token;
-        const verifytoken = jwt.verify(token, process.env.SECRET_KEY)
+const Users = require("../models/User")
+const config = require("../config")
 
-        const rootUser = await signUp.findOne({ _id: verifytoken._id, "tokens.token": token })
-        if (!rootUser) {
-            req.rootUser = false
-        }
-        else{
-            req.token = token
-            req.rootUser = rootUser
-            res.status(200)
-        }
+const authenticate = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    const verifytoken = jwt.verify(token, config.secret_key)
+
+    const rootUser = await Users.findOne({ _id: verifytoken._id, "tokens.token": token })
+    if (!rootUser) {
+      req.rootUser = false
     }
-    catch (err) {
-        req.rootUser = false
-        res.status(200)
+    else {
+      req.rootUser = rootUser
+      res.status(200)
     }
-    next()
+  }
+  catch (err) {
+    req.rootUser = false
+    res.status(200)
+  }
+  next()
 }
 
 module.exports = authenticate

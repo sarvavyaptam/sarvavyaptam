@@ -61,7 +61,11 @@
 </head>
 
 <body>
+  {{#if_eq login 'nope'}}
   {{>nav}}
+  {{else}}
+  {{>navLogin name=login.name}}
+  {{/if_eq}}
   {{>backtotop}}
   <div class="py-6">
     <div class="flex dark:bg-gray-800 bg-white rounded-lg shadow-lg overflow-hidden mx-auto max-w-sm lg:max-w-4xl">
