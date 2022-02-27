@@ -29,15 +29,15 @@
           href="/shop/{{this.category}}/{{this.id}}">
           <div
             class="hover:shadow-lg transition-shadow h-full border-2 border-gray-200 dark:border-gray-700 border-opacity-60 rounded-lg overflow-hidden">
-            <img class="w-full object-cover object-center" alt="{{this.name}}"
-              data-src={{this.image}}>
+            <img class="w-full object-cover object-center" alt="{{this.name}}" data-src={{this.image}}>
             <div class="pt-6 pr-6 pl-6">
               <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1"
                 style="display: block; text-transform: uppercase;">CATEGORY - {{this.category}}</h2>
               <h1 class="title-font text-md font-medium dark:text-white text-gray-800 mb-3">{{this.name}}</h1>
               <p class="leading-relaxed dark:text-gray-300 mb-3"></p>
               <p class="title-font text-md text-right text-md dark:text-white text-gray-800 mb-3">₹{{this.price}} <span
-                  class="dark:text-gray-400 text-sm line-through">₹{{this.cut}}</span> <span class="text-sm text-green-500">{{off this.price this.cut}}%
+                  class="dark:text-gray-400 text-sm line-through">₹{{this.cut}}</span> <span
+                  class="text-sm text-green-500">{{off this.price this.cut}}%
                   off</span></p>
               <p class="leading-relaxed"></p>
             </div>

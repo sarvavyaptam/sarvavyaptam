@@ -20,7 +20,33 @@
   {{>navLogin name=login.name}}
   {{/if_eq}}
   {{{html}}}
+    <script>
+    async function add_to_cart() {
+      try {
+        fetch("/add-cart", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            id: {{{ json id }}}
+          })
+        }).then((e) => {
+          // if you are not login set the cookie of your item
+          if(e.status === 202){
+            e.json().then((easy) => {
+              document.cookie = `user=${easy.token}; expires=${new Date(Date.now() + 10000000000)}; path=/`;
+            })
+          }
+          window.location.reload()
+        })
+      }
+      catch {
+    }
+    }
+  </script>
   {{>footer}}
+  <script src="/js/script.js"></script>
 </body>
 
 </html>

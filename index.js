@@ -300,40 +300,58 @@ app.get('/auth_callback', authenticate, (req, res) => {
   }
 });
 
-app.get("/shop/:cate/:id", authenticate, (req, res) => {
-  const { cate, id } = req.params
-  products.find({ category: cate, id }).then((e) => {
-    if (e.length === 0) {
-      res.render("404", {
-        login: (req.rootUser === false ? 'nope' : req.rootUser)
-      })
+app.get("/shop/:cate/:id", authenticate, async (req, res) => {
+  try {
+    let user = [{}]
+    if(req.rootUser === false){
+      if(req.cookies.user){
+        const hi = jwt.verify(req.cookies.user, config.secret_key) || { cart: [], recent: [] }
+        user = hi.cart
+      }
+      else{
+        user = [{}]
+      }
     }
-    else {
-      let html = e.map((val) => {
-        let details = val.details.map((vals) => {
-          return `<tr>
+    else{
+      user = req.rootUser.cart
+    }
+    const hi = []
+    user.map((val) => {
+      hi.push(val.id)
+    })
+    const { cate, id } = req.params
+    products.find({ category: cate, id }).then((e) => {
+      if (e.length === 0) {
+        res.render("404", {
+          login: (req.rootUser === false ? 'nope' : req.rootUser)
+        })
+      }
+      else {
+        let html = e.map((val) => {
+          let details = val.details.map((vals) => {
+            return `<tr>
           <td class="border-l border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
             ${vals.name}</td>
           <td class="border-r border-slate-100 dark:border-slate-700 p-4 text-slate-600 dark:text-slate-400">
             ${vals.value}</td>
         </tr>`
-        })
-        details = details.join('')
-        const Stock = () => {
-          if (val.stock >= 50) {
-            return `<span class='dark:text-green-400 text-md text-green-500'>${val.stock} left in stock</span>`
+          })
+          details = details.join('')
+          const Stock = () => {
+            if (val.stock >= 50) {
+              return `<span class='dark:text-green-400 text-md text-green-500'>${val.stock} left in stock</span>`
+            }
+            else if (val.stock <= 49 && val.stock >= 15) {
+              return `<span class='dark:text-green-400 text-md text-green-500'>Hurry up! Only ${val.stock} left in stock</span>`
+            }
+            else if (val.stock <= 14 && val.stock >= 1) {
+              return `<span class='dark:text-red-400 text-md text-red-500'>Hurry up! Only ${val.stock} left in stock</span>`
+            }
+            else if (val.stock <= 0) {
+              return `<span class='dark:text-red-400 text-md text-red-500'>You missed it! All stocks are sold out</span>`
+            }
           }
-          else if (val.stock <= 49 && val.stock >= 15) {
-            return `<span class='dark:text-green-400 text-md text-green-500'>Hurry up! Only ${val.stock} left in stock</span>`
-          }
-          else if (val.stock <= 14 && val.stock >= 1) {
-            return `<span class='dark:text-red-400 text-md text-red-500'>Hurry up! Only ${val.stock} left in stock</span>`
-          }
-          else if (val.stock <= 0) {
-            return `<span class='dark:text-red-400 text-md text-red-500'>You missed it! All stocks are sold out</span>`
-          }
-        }
-        return `<section class="text-gray-600 body-font">
+          return `<section class="text-gray-600 body-font">
         <div id="modal" class="items-center fixed inset-0 overflow-y-auto" style="display: none; z-index: 10000000;">
           <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div onclick="document.getElementById('modal').style.display='none'" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div><span
@@ -349,7 +367,7 @@ app.get("/shop/:cate/:id", authenticate, (req, res) => {
               <div class="bg-white">
                 <div class="flex justify-center">
                   <div><img
-                      src="${val.image}"
+                      data-src="${val.image}"
                       alt=".."></div>
                 </div>
               </div>
@@ -361,11 +379,11 @@ app.get("/shop/:cate/:id", authenticate, (req, res) => {
             style="width: 100%;">
             <div class="border-2 border-gray-200 dark:border-gray-700 border-opacity-60"><img onclick="document.getElementById('modal').style.display='inline'"
                 class="cursor-pointer object-cover object-center rounded" alt="hero"
-                src="${val.image}"
+                data-src="${val.image}"
                 style="position: relative; left: 50%; transform: translate(-50%);"></div>
-            <div class="flex flex-row mt-2 md:w-full pb-10"><button
-                class="mt-1 mr-1 rounded shadow hover:shadow-md transition-shadow w-1/2 text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:opacity-90 text-lg">ADD
-                TO CART</button><a
+            <div class="flex flex-row mt-2 md:w-full pb-10">
+            ${hi.indexOf(val.id) > -1 ? '<button type="submit" class="mt-1 mr-1 rounded shadow hover:shadow-md transition-shadow w-1/2 text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:opacity-90 text-lg">ADDED TO CART</button>' : `<button type="submit" class="mt-1 mr-1 rounded shadow hover:shadow-md transition-shadow w-1/2 text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:opacity-90 text-lg" onclick="add_to_cart()">ADD TO CART</button>`}
+            <a
                 class="text-center mt-1 ml-1 rounded shadow hover:shadow-md transition-shadow w-1/2 text-white bg-green-500 border-0 py-2 px-6 focus:outline-none hover:opacity-90 text-lg"
                 href="/order?id=fortune-everyday-basmati-rice-long-grain-2kg&amp;quantity=1">BUY NOW</a></div>
           </div>
@@ -412,18 +430,26 @@ app.get("/shop/:cate/:id", authenticate, (req, res) => {
           </div>
         </div>
       </section>`
-      })
-      html = html.join('')
-      let name = e.map((val) => {
-        return `${val.name}`
-      })
-      name.join('')
-      res.render("product", {
-        login: (req.rootUser === false ? 'nope' : req.rootUser),
-        html, name
-      })
-    }
-  })
+        })
+        html = html.join('')
+        let name = e.map((val) => {
+          return `${val.name}`
+        })
+        let id = [];
+        e.map((val) => {
+          id.push(val.id)
+        })
+        name.join('')
+        res.render("product", {
+          login: (req.rootUser === false ? 'nope' : req.rootUser),
+          html, name, id
+        })
+      }
+    })
+  }
+  catch {
+    res.clearCookie("user")
+  }
 })
 
 app.get("/shop", authenticate, (req, res) => {
@@ -442,13 +468,99 @@ app.get("/shop/:id", authenticate, async (req, res) => {
     }
     else {
       res.render("show", {
-        items, login: (req.rootUser === false ? 'nope' : req.rootUser), name:items[0].category.toUpperCase()
+        items, login: (req.rootUser === false ? 'nope' : req.rootUser), name: items[0].category.toUpperCase()
       })
     }
   }
   catch (err) {
     console.log(err)
   }
+})
+
+app.post("/add-cart", authenticate, (req, res) => {
+  const { id } = req.body;
+  if (!id) {
+    return res.render("404", {
+      login: (req.rootUser === false ? 'nope' : req.rootUser)
+    })
+  }
+  products.find({ id: { $in: id } }).then((e) => {
+    if (e.length === 0) {
+      res.render("404", {
+        login: (req.rootUser === false ? 'nope' : req.rootUser)
+      })
+    }
+    else {
+      if (req.rootUser === false) {
+        if (req.cookies.user) {
+          let user = {}
+          if (jwt.verify(req.cookies.user, config.secret_key)) {
+            user = jwt.verify(req.cookies.user, config.secret_key) || { cart: [], recent: [] }
+          }
+          else {
+            user = { cart: [], recent: [] }
+          }
+          let bagh = []
+          user.cart.map((val) => {
+            bagh.push(val.id)
+          })
+          let hi = user.cart
+          e.map((vals) => {
+            id.map((val) => {
+              if (vals.id === val) {
+                if (bagh.indexOf(val) === -1) {
+                  hi.push({ id: val, quantity: 1 })
+                }
+              }
+            })
+          })
+          user.cart = hi
+          const cart = jwt.sign(user, config.secret_key)
+          res.status(202).send({ token: cart })
+        }
+        else {
+          let hi = []
+          e.map((vals) => {
+            id.map((val) => {
+              if (vals.id === val) {
+                hi.push({ id: val, quantity: 1 })
+              }
+            })
+          })
+          const cart = jwt.sign({ cart: hi }, config.secret_key)
+          res.status(202).send({ token: cart })
+        }
+      }
+      else {
+        let cart = []
+        req.rootUser.cart.map((val) => {
+          cart.push(val.id)
+        })
+        if (cart.indexOf(id) > -1) {
+          res.redirect("/my-cart")
+        }
+        else {
+          let hi = []
+          e.map((vals) => {
+            id.map((val) => {
+              if (vals.id === val) {
+                hi.push({ id: val, quantity: 1 })
+              }
+            })
+          })
+          Users.updateOne({ _id: req.rootUser._id }, { $push: { cart: hi } }).then(() => {
+            res.redirect("/my-cart")
+          })
+        }
+      }
+    }
+  }).catch((err) => {
+    console.log(err)
+    res.clearCookie("user")
+    res.render("404", {
+      login: (req.rootUser === false ? 'nope' : req.rootUser)
+    })
+  })
 })
 
 app.post("*", authenticate, (req, res) => {
