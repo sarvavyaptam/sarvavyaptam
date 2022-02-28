@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Sarvavyaptam - Best online store" />
+  <link rel="apple-touch-icon" href="/logo192.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>Sarvavyaptam - {{title}}</title>
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+  {{#if_eq login 'nope'}}
+  {{>nav}}
+  {{else}}
+  {{>navLogin name=login.name}}
+  {{/if_eq}}
+  {{>backtotop}}
+  {{{chatemulae}}}
+  {{>footer}}
+  <script src="/js/script.js"></script>
+</body>
+
+</html>

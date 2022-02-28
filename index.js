@@ -53,6 +53,7 @@ app.use("/image", express.static(path.join(__dirname, './public/SarvamVyaptam.pn
 app.use("/logo192.png", express.static(path.join(__dirname, './public/logo192.png')))
 app.use("/manifest.json", express.static(path.join(__dirname, './public/manifest.json')))
 app.use("/robots.txt", express.static(path.join(__dirname, './search_engine/robots.txt')))
+app.use("/noAddToCart", express.static(path.join(__dirname, './public/noAddToCart.webp')))
 app.use("/20210527.jpg", express.static(path.join(__dirname, './search_engine/20210527.jpg')))
 app.use("/images/noResultsFound.jpg", express.static(path.join(__dirname, './search_engine/noResultsFound.jpg')))
 
@@ -480,6 +481,7 @@ app.get("/shop/:id", authenticate, async (req, res) => {
 
 app.get("/logout", authenticate, (req, res) => {
   res.clearCookie("token")
+  res.redirect("/")
 })
 
 app.get("/search", authenticate, (req, res) => {
@@ -589,9 +591,6 @@ app.get("/search", authenticate, (req, res) => {
       <h2 class="mt-1 dark:text-gray-400" style="font-size: 25px; display: block; width: 100%; text-align: center">Sorry we have 0 search results for '<b>${searchInput}</b>'.<br /> Try again with another specific search term
       </h2>
     </div>`
-      res.render("search", {
-        login: (req.rootUser === false ? 'nope' : req.rootUser), search: req.query.q, chatemulae
-      })
     }
     else {
       let lists = []
@@ -624,10 +623,10 @@ app.get("/search", authenticate, (req, res) => {
         </div>
       </div>
     </section>`
-      res.render("search", {
-        login: (req.rootUser === false ? 'nope' : req.rootUser), search: req.query.q, chatemulae
-      })
     }
+    res.render("search", {
+      login: (req.rootUser === false ? 'nope' : req.rootUser), search: req.query.q, chatemulae
+    })
   })
 })
 
@@ -638,7 +637,11 @@ app.post("/add-cart", authenticate, (req, res) => {
       login: (req.rootUser === false ? 'nope' : req.rootUser)
     })
   }
-  products.find({ id: { $in: id } }).then((e) => {
+  const ids = []
+  id.map((val) => {
+    ids.push(val.id)
+  })
+  products.find({ id: { $in: ids } }).then((e) => {
     if (e.length === 0) {
       res.render("404", {
         login: (req.rootUser === false ? 'nope' : req.rootUser)
@@ -661,9 +664,9 @@ app.post("/add-cart", authenticate, (req, res) => {
           let hi = user.cart
           e.map((vals) => {
             id.map((val) => {
-              if (vals.id === val) {
-                if (bagh.indexOf(val) === -1) {
-                  hi.push({ id: val, quantity: 1 })
+              if (vals.id === val.id) {
+                if (bagh.indexOf(val.id) === -1) {
+                  hi.push({ id: val.id, quantity: val.quantity })
                 }
               }
             })
@@ -690,31 +693,152 @@ app.post("/add-cart", authenticate, (req, res) => {
         req.rootUser.cart.map((val) => {
           cart.push(val.id)
         })
-        if (cart.indexOf(id) > -1) {
-          res.redirect("/my-cart")
-        }
-        else {
-          let hi = []
-          e.map((vals) => {
-            id.map((val) => {
-              if (vals.id === val) {
-                hi.push({ id: val, quantity: 1 })
-              }
-            })
-          })
-          Users.updateOne({ _id: req.rootUser._id }, { $push: { cart: hi } }).then(() => {
+        ids.map((values) => {
+          if (cart.indexOf(values) > -1) {
             res.redirect("/my-cart")
-          })
-        }
+          }
+          else {
+            let hi = []
+            e.map((vals) => {
+              id.map((val) => {
+                if (vals.id === val.id) {
+                  hi.push({ id: val.id, quantity: val.quantity })
+                }
+              })
+            })
+            hi.map((val) => {
+              Users.updateOne({ _id: req.rootUser._id }, { $push: { cart: { id: val.id, quantity: val.quantity } } }).then(() => {
+                res.status(200).send("kada sukhi bhavamiyaham")
+              })
+            })
+          }
+        })
       }
     }
   }).catch((err) => {
-    console.log(err)
     res.clearCookie("user")
     res.render("404", {
       login: (req.rootUser === false ? 'nope' : req.rootUser)
     })
   })
+})
+
+app.get("/my-cart", authenticate, async (req, res) => {
+  try {
+    if (req.rootUser === false) {
+      if (req.cookies.user) {
+        let user = jwt.verify(req.cookies.user, config.secret_key)
+        let bsdk = []
+        user.cart.map((val) => {
+          bsdk.push(val.id)
+        })
+        products.find({ id: { $in: bsdk } }).then((e) => {
+          if (e.length === 0) {
+            let chatemulae = `<div class="flex justify-center items-center flex-col text-xl dark:text-slate-400 dark:bg-gray-900 w-full bg-white" style="height:100vh">
+            <img alt=".." src="/noAddToCart" class='dark:hidden block' />
+            No item is added to cart
+          </div>`
+            res.render("custom", {
+              login: (req.rootUser === false ? 'nope' : req.rootUser), search: req.query.q, chatemulae, title: "Your Cart"
+            })
+          }
+          else {
+            let like = []
+            e.map((val) => {
+              return user.cart.map((vals) => {
+                if (vals.id === val.id) {
+                  like.push({ real: val, quantity: vals.quantity })
+                }
+              })
+            })
+            let hi = like.map((val) => {
+              return `<div class="md:flex border px-4 my-4 py-4 border-t border-gray-300 dark:border-slate-700">
+              <div class="md:w-2/12 w-full flex items-center"><img
+                  src="${val.real.image}"
+                  alt="Black Leather Purse" style="width: 100%; max-width: 100%; height: auto;"></div>
+              <div class="md:pl-3 w-full">
+                <div class="w-full mt-3">
+                  <div><a class="text-gray-800 text-lg dark:text-gray-300"
+                      href="/shop/${val.real.category}/${val.real.id}">${val.real.name}</a>
+                    <p class="text-slate-500 dark:text-gray-400 mt-2">${val.real.desc.length >= 200 ? `${val.real.desc.substring(0, 200)}...` : val.real.desc}</p>
+                  </div>
+                </div>
+                <div class="md:flex justify-between pt-5">
+                  <div class="flex flex-col">
+                  ${val.real.stock >= 1 ? `<div class="flex mb-2">
+                      <div
+                        class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-l border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none">
+                        -</div>
+                      <div class="2/4 p-1 px-8 border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200">
+                        ${val.quantity}</div>
+                      <div
+                        class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-t border -b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none">
+                        +</div>
+                    </div>` : ``}
+                    <div class="flex mt-2">
+                      ${val.real.stock >= 1 ? `<p class="text-xs leading-3 text-green-400">${val.real.stock} in Stock</p>` : `<p class="text-xs leading-3 text-red-400">Out of stock</p>`}
+                      <p class="text-xs leading-3 hover:underline text-red-500 pl-5 cursor-pointer">Remove
+                      </p>
+                    </div>
+                  </div>
+                  <p class="title-font text-xl text-md dark:text-white text-gray-800 mb-3">₹${val.real.price} <span
+                      class="dark:text-gray-400 text-sm line-through">₹${val.real.cut}</span>
+                      <span class="text-sm rounded text-green-500">${Math.trunc(100 - ((val.real.price / val.real.cut) * 100))}% off</span></p>
+                </div>
+              </div>
+            </div>`
+            })
+            hi = hi.join("")
+            chatemulae = `<div class="container mx-auto">
+            <div id="checkout">
+              <div class="flex items-start lg:flex-row flex-col" id="cart">
+                <div class="w-full px-5 py-4 bg-white dark:bg-gray-900 overflow-y-hidden ">
+                  <p class="lg:text-4xl text-3xl font-black leading-10 text-gray-800 dark:text-white pt-3">Shopping Cart
+                  </p>
+                  ${hi}
+                </div>
+                <div class="lg:w-96 px-5 py-4 w-full bg-gray-100 dark:bg-gray-600">
+                  <div class="flex flex-col lg:px-8 md:px-7 px-4 py-7 justify-between overflow-y-auto">
+                    <div>
+                      <p class="lg:text-4xl text-3xl font-black leading-9 text-gray-800 dark:text-white">Summary</p>
+                      <div class="flex items-center justify-between pt-16">
+                        <p class="text-base leading-none text-gray-800 dark:text-white">Subtotal</p>
+                        <p class="text-base leading-none text-gray-800 dark:text-white">164 Rs.</p>
+                      </div>
+                    </div>
+                    <div><a type="button"
+                        class="text-center mt-4 text-base leading-none w-full py-5 bg-gray-800 border-gray-800 border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 text-white dark:hover:bg-gray-700"
+                        href="/my-cart/order">Checkout</a></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>`
+            res.render("custom", {
+              login: (req.rootUser === false ? 'nope' : req.rootUser), search: req.query.q, chatemulae, title: "Your Cart"
+            })
+          }
+        })
+      }
+      else {
+        let chatemulae = `<div class="flex justify-center items-center flex-col text-xl dark:text-slate-400 dark:bg-gray-900 w-full bg-white" style="height:100vh">
+      <img alt=".." src="/noAddToCart" class='dark:hidden block' />
+      No item is added to cart
+    </div>`
+        res.render("custom", {
+          login: (req.rootUser === false ? 'nope' : req.rootUser), search: req.query.q, chatemulae, title: "Your Cart"
+        })
+      }
+    }
+    else {
+      res.render("custom", {
+        login: (req.rootUser === false ? 'nope' : req.rootUser), search: req.query.q, chatemulae, title: "Your Cart"
+      })
+    }
+  }
+  catch {
+    res.clearCookie("user")
+  }
 })
 
 app.post("*", authenticate, (req, res) => {
