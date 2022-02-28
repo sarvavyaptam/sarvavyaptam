@@ -54,6 +54,7 @@ app.use("/logo192.png", express.static(path.join(__dirname, './public/logo192.pn
 app.use("/manifest.json", express.static(path.join(__dirname, './public/manifest.json')))
 app.use("/robots.txt", express.static(path.join(__dirname, './search_engine/robots.txt')))
 app.use("/20210527.jpg", express.static(path.join(__dirname, './search_engine/20210527.jpg')))
+app.use("/images/noResultsFound.jpg", express.static(path.join(__dirname, './search_engine/noResultsFound.jpg')))
 
 app.get("/", authenticate, (req, res) => {
   res.render("index", {
@@ -303,16 +304,16 @@ app.get('/auth_callback', authenticate, (req, res) => {
 app.get("/shop/:cate/:id", authenticate, async (req, res) => {
   try {
     let user = [{}]
-    if(req.rootUser === false){
-      if(req.cookies.user){
+    if (req.rootUser === false) {
+      if (req.cookies.user) {
         const hi = jwt.verify(req.cookies.user, config.secret_key) || { cart: [], recent: [] }
         user = hi.cart
       }
-      else{
+      else {
         user = [{}]
       }
     }
-    else{
+    else {
       user = req.rootUser.cart
     }
     const hi = []
@@ -399,12 +400,12 @@ app.get("/shop/:cate/:id", authenticate, async (req, res) => {
                 class="text-sm rounded bg-green-600 text-white p-1">${Math.trunc(100 - ((val.price / val.cut) * 100))}% off</span></p>
             <div class="flex mb-2">
               <div
-                class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-l border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none">
+                class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-l border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none" id="minus" onclick="minus()">
                 -</div>
-              <div class="2/4 p-1 px-8 border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200">1
+              <div id="quantity" class="2/4 p-1 px-8 border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200">1
               </div>
               <div
-                class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-t border -b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none">
+                class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-t border -b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none" id="plus" onclick="plus()">
                 +</div>
             </div>
             <div class="relative overflow-auto">
@@ -437,12 +438,12 @@ app.get("/shop/:cate/:id", authenticate, async (req, res) => {
         })
         let id = [];
         e.map((val) => {
-          id.push(val.id)
+          id.push({ id: val.id })
         })
         name.join('')
         res.render("product", {
           login: (req.rootUser === false ? 'nope' : req.rootUser),
-          html, name, id
+          html, name, id, stock: e[0].stock
         })
       }
     })
@@ -475,6 +476,159 @@ app.get("/shop/:id", authenticate, async (req, res) => {
   catch (err) {
     console.log(err)
   }
+})
+
+app.get("/logout", authenticate, (req, res) => {
+  res.clearCookie("token")
+})
+
+app.get("/search", authenticate, (req, res) => {
+  products.find().then((e) => {
+    let list = []
+    let searchInput = req.query.q
+    let search = [""]
+    if (req.query.q) {
+      search = req.query.q.toLowerCase().trim().replace(/\s{2,}/g, ' ').split(" ")
+    }
+    else {
+      search = [""]
+    }
+    /* Kada Sukhi Bhavamiyaham */
+    e.map((vals) => {
+      return search.map((val) => {
+        let { name, desc, id, cut, price, image, category, stock, details } = vals
+        details.forEach(valses => {
+          if (valses.value.toLowerCase().indexOf(val) > -1) {
+            function isUnique(myArray, value) {
+              let index = myArray.indexOf(value)
+              if (index >= 0 && index + 1 < myArray.length - 1) {
+                return myArray.indexOf(value, index + 1) === -1
+              }
+              return index >= 0
+            }
+            if (isUnique(list, id)) { }
+            else {
+              let newList = list
+              newList.push(id)
+              list = newList
+            }
+          }
+          else {
+            if (valses.value.replace(/ /g, "").toLowerCase().indexOf(searchInput.replace(/ /g, "").toLowerCase()) > -1) {
+              function isUnique(myArray, value) {
+                let index = myArray.indexOf(value)
+                if (index >= 0 && index + 1 < myArray.length - 1) {
+                  return myArray.indexOf(value, index + 1) === -1
+                }
+                return index >= 0
+              }
+              if (isUnique(list, id)) { }
+              else {
+                let newList = list
+                newList.push(id)
+                list = newList
+              }
+            }
+          }
+        });
+        if (name.toLowerCase().indexOf(val) > -1 ||
+          desc.toLowerCase().indexOf(val) > -1 ||
+          id.toLowerCase().indexOf(val) > -1 ||
+          String(cut).toLowerCase().indexOf(val) > -1 ||
+          String(price).toLowerCase().indexOf(val) > -1 ||
+          image.toLowerCase().indexOf(val) > -1 ||
+          category.toLowerCase().indexOf(val) > -1 ||
+          String(stock).toLowerCase().indexOf(val) > -1) {
+          function isUnique(myArray, value) {
+            let index = myArray.indexOf(value)
+            if (index >= 0 && index + 1 < myArray.length - 1) {
+              return myArray.indexOf(value, index + 1) === -1
+            }
+            return index >= 0
+          }
+          if (isUnique(list, vals.id)) { }
+          else {
+            let newList = list
+            newList.push(vals.id)
+            list = newList
+          }
+        }
+        else {
+          let myQuery = searchInput.toLowerCase().replace(/ /g, "")
+          if (name.replace(/ /g, "").toLowerCase().indexOf(myQuery) > -1 ||
+            desc.replace(/ /g, "").toLowerCase().indexOf(myQuery) > -1 ||
+            id.replace(/ /g, "").toLowerCase().indexOf(myQuery) > -1 ||
+            String(cut).replace(/ /g, "").toLowerCase().indexOf(myQuery) > -1 ||
+            String(price).replace(/ /g, "").toLowerCase().indexOf(myQuery) > -1 ||
+            image.replace(/ /g, "").toLowerCase().indexOf(myQuery) > -1 ||
+            category.replace(/ /g, "").toLowerCase().indexOf(myQuery) > -1 ||
+            String(stock).replace(/ /g, "").toLowerCase().indexOf(myQuery) > -1) {
+            function isUnique(myArray, value) {
+              let index = myArray.indexOf(value)
+              if (index >= 0 && index + 1 < myArray.length - 1) {
+                return myArray.indexOf(value, index + 1) === -1
+              }
+              return index >= 0
+            }
+            if (isUnique(list, vals.id)) { }
+            else {
+              let newList = list
+              newList.push(vals.id)
+              list = newList
+            }
+          }
+        }
+      })
+    })
+    let chatemulae = ``
+    if (list.length === 0) {
+      chatemulae = `<div class="py-5 dark:h-96 dark:flex dark:align-middle dark:items-center dark:justify-center">
+      <div class="flex justify-center align-middle items-center">
+        <img src=${`/images/noResultsFound.jpg`} class="dark:hidden block" alt="NoResults" />
+      </div>
+      <h2 class="mt-1 dark:text-gray-400" style="font-size: 25px; display: block; width: 100%; text-align: center">Sorry we have 0 search results for '<b>${searchInput}</b>'.<br /> Try again with another specific search term
+      </h2>
+    </div>`
+      res.render("search", {
+        login: (req.rootUser === false ? 'nope' : req.rootUser), search: req.query.q, chatemulae
+      })
+    }
+    else {
+      let lists = []
+      list.map((val) => {
+        e.map((vals) => {
+          if (val === vals.id) {
+            lists.push(vals)
+          }
+        })
+      })
+      let youList = lists.map((vals) => {
+        return `<a href=${vals.category}/${vals.id} class="p-4 md:mb-2 w-full xs:w-1/2 lg:mb-0 lg:w-1/4 md:w-1/2 sm:w-1/2">
+        <div class="hover:shadow-lg transition-shadow h-full border-2 border-gray-200 dark:border-gray-700 border-opacity-60 rounded-lg overflow-hidden">
+          <img class="w-full object-cover object-center" src=${vals.image}
+            alt=${vals.name} />
+          <div class="pt-6 pr-6 pl-6">
+            <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1" style="text-transform: uppercase">CATEGORY - ${vals.category.replace(/-/g, " ")}</h2>
+            <h1 class="title-font text-md font-medium dark:text-white text-gray-800 mb-3">${vals.name}</h1>
+            <p class="title-font text-md text-right text-md dark:text-white text-gray-800 mb-3">₹${vals.price} <span class='dark:text-gray-400 text-sm line-through'>₹${vals.cut}</span> <span class='text-sm text-green-500'>${Math.trunc(100 - ((vals.price / vals.cut) * 100))}% off</span></p>
+          </div>
+        </div>
+      </a>`
+      })
+      youList = youList.join("")
+      chatemulae = `<section class="bg-white text-gray-400 dark:bg-gray-900 body-font">
+      <div class="container px-5 py-14 mx-auto">
+        <h1 class='mb-4 text-4xl text-black dark:text-gray-400 text-center'>Search Results with ${searchInput}</h1>
+        <div class="flex flex-wrap -m-4">
+          ${youList}
+        </div>
+      </div>
+    </section>`
+      res.render("search", {
+        login: (req.rootUser === false ? 'nope' : req.rootUser), search: req.query.q, chatemulae
+      })
+    }
+  })
 })
 
 app.post("/add-cart", authenticate, (req, res) => {

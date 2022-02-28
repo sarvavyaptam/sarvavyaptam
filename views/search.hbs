@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Sarvavyaptam - Best online store" />
+  <link rel="apple-touch-icon" href="/logo192.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>Sarvavyaptam - Best online store</title>
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+  {{#if_eq login 'nope'}}
+  {{>nav}}
+  {{else}}
+  {{>navLogin name=login.name}}
+  {{/if_eq}}
+  {{>backtotop}}
+  <div class="container px-5 py-3 mx-auto">
+    <form class="pt-4 lg:max-w-lg pb-4 flex">
+      <input value="{{search}}" type="text" placeholder='Search Here' name="q" class="dark:text-gray-300 dark:bg-gray-800 dark:border-gray-700
+      focus:border-indigo-500 dark:focus:bg-gray-900 dark:focus:ring-indigo-900 w-full bg-gray-100 bg-opacity-50 rounded
+      border border-gray-300 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1
+      px-3 leading-8 transition-colors duration-200 ease-in-out" />
+      <button class='w-1/4 ml-2 cursor-pointer bg-indigo-600 dark:text-gray-400 p-2 font-medium text-white rounded-md
+        dark:hover:bg-gray-600 dark:bg-gray-700 dark:hover:text-gray-400 hover:bg-indigo-500 hover:text-white
+        text-lg'>Search</button>
+    </form>
+  </div>
+  {{{chatemulae}}}
+  {{>footer}}
+  <script src="/js/script.js"></script>
+</body>
+
+</html>
