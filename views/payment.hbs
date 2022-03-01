@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Sarvavyaptam - Best online store" />
+  <link rel="apple-touch-icon" href="/logo192.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>Sarvavyaptam - Buy {{title}}</title>
+  <link href="/css/style.css" rel="stylesheet">
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+
+<body>
+  {{#if_eq login 'nope'}}
+  {{>nav}}
+  {{else}}
+  {{>navLogin name=login.name}}
+  {{/if_eq}}
+  <div class="bg-white dark:bg-gray-900" style="min-height: 80vh;">
+    <main class="mb-8 mt-5 bg-white dark:bg-gray-900">
+      <div class="container mx-auto px-6">
+        <div class="flex flex-col lg:flex-row mt-5">
+          <div class="w-full lg:w-1/2 order-2">
+            <h3 class="text-gray-700 text-2xl font-medium mb-2 dark:text-gray-200">Checkout</h3>
+            <div class="flex items-center mb-2"><button
+                class="flex text-sm dark:text-gray-200 text-gray-700 focus:outline-none"><span
+                  class="flex items-center justify-center text-white bg-blue-500 rounded-full h-5 w-5 mr-2">1</span>
+                Account</button><button
+                class="flex text-sm dark:text-gray-200 text-gray-700 focus:outline-none ml-8"><span
+                  class="flex items-center justify-center text-white bg-blue-500 rounded-full h-5 w-5 mr-2">2</span>
+                Shipping</button><button class="flex text-sm dark:text-gray-200 text-gray-700 focus:outline-none ml-8"
+                disabled=""><span
+                  class="flex items-center justify-center border-2 border-blue-500 rounded-full h-5 w-5 mr-2">3</span>
+                Payments</button></div>
+            <div style="margin-top: 20px;">
+              <a href="{{link}}"
+                class="text-gray-500 hover:text-gray-600 cursor-pointer inline dark:text-gray-300 dark:hover:text-gray-200">
+                &larr; Go Back</a>
+              <div class="mt-2">
+                <h2 class="text-2xl mb-2 dark:text-gray-300">Pay {{total}}₹</h2>
+                <div
+                  class="flex w-full border dark:border-slate-600 text-lg p-4 pl-8 pt-3 text-black dark:text-slate-200 text-left">
+                  <p class="text-left">Payment Options</p>
+                </div>
+                <div
+                  class="w-full border dark:border-slate-600 text-lg p-4 pl-8 pt-3 text-black dark:text-slate-200 text-left">
+                  <div class="block sm:flex space-x-0 sm:space-x-2 space-y-2 sm:space-y-0">
+                    <div
+                      class="border-sky-700 rounded lg:w-1/4 md:w-1/4 h-20 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-700 w-full bg-gray-100 bg-opacity-50 border focus:bg-white focus:ring-2 focus:ring-gray-700 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                      style="display: flex; justify-content: center; align-items: center; user-select: none; cursor: pointer; border-width: 4px;">
+                      <img style="height:100%" src="/images/payment/cards.png" alt="card">
+                    </div>
+                    <div
+                      class="lg:w-1/4 md:w-1/4 h-20 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-700 w-full bg-gray-100 bg-opacity-50 border border-gray-300 focus:bg-white focus:ring-2 focus:ring-gray-700 rounded text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                      style="display: flex; justify-content: center; align-items: center; user-select: none; cursor: pointer;">
+                      <img style="height:100%" src="/images/payment/google-pay.png" alt="google-pay">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pt-3 w-full">
+                <button onclick="buy()"
+                  class="flex text-white dark:bg-indigo-500 border-0 py-3 px-8 focus:outline-none bg-gray-900 rounded text-lg disabled:bg-gray-500">
+                  Make Payment</button>
+              </div>
+            </div>
+          </div>
+          <div class="w-full mb-8 flex-shrink-0 order-1 lg:w-1/2 lg:mb-0 lg:order-2">
+            <div class="lg:flex justify-center lg:justify-end">
+              <div class="lg:max-w-md w-full">
+                <div
+                  class="lg:hidden cursor-pointer flex w-full border dark:border-slate-600 text-lg p-4 pl-8 pt-3 text-black dark:text-slate-200 text-left">
+                  <p class="text-left" style="flex: 0 0 90%;">Products</p>
+                  <p class="text-right" style="flex: 0 0 10%;">-</p>
+                </div>
+                <div>
+                  <div class="hidden">
+                    <div class="border dark:border-slate-500 rounded-md px-4 py-3 flex justify-between mt-3">
+                      <div class="flex"><img class="h-20 w-20 object-cover rounded" src="{{items.item.image}}" alt="..">
+                        <div class="mx-3">
+                          <h3 class="text-sm text-black dark:text-gray-300">{{items.item.name}} - {{items.item.price}}₹/-</h3>
+                          <p class="text-gray-700 dark:text-gray-400">Quantity - {{items.quantity}}</p>
+                          <p class="text-gray-700 dark:text-gray-400">Total - {{total}}₹</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="hidden lg:block">
+                    <div class="border dark:border-slate-500 rounded-md px-4 py-3 flex justify-between mt-3">
+                      <div class="flex"><img class="h-20 w-20 object-cover rounded" src="{{items.item.image}}" alt="..">
+                        <div class="mx-3">
+                          <h3 class="text-sm text-black dark:text-gray-300">{{items.item.name}} - {{items.item.price}}₹/-</h3>
+                          <p class="text-gray-700 dark:text-gray-400">Quantity - {{items.quantity}}</p>
+                          <p class="text-gray-700 dark:text-gray-400">Total - {{total}}₹</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <table class="w-full">
+                    <tbody class="table-auto w-full text-sm">
+                      <tr>
+                        <td class="pt-6 text-gray-700 dark:text-slate-400">Subtotal</td>
+                        <td class="pt-6 text-slate-600 text-right dark:text-slate-400">{{subTotal}} Rs.</td>
+                      </tr>
+                      <tr>
+                        <td class="pt-6 text-gray-700 dark:text-slate-400">Shipping Charge</td>
+                        <td class="pt-6 text-slate-600 text-right dark:text-slate-400">40₹
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script>
+    async function buy() {
+      try {
+        const res = await fetch("/pay", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            id:{{{json id}}}, quantity:{{{json quantity}}},phone:{{{json phone}}}
+          })
+        })
+        const data = await res.json()
+        var rzp1 = new Razorpay(data.options);
+        rzp1.open();
+      }
+      catch (err) {
+        alert(err)
+      }
+    }
+  </script>
+  {{>footer}}
+</body>
+
+</html>

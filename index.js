@@ -14,8 +14,14 @@ const { OAuth2Client } = require('google-auth-library')
 const config = require("./config")
 const authenticate = require("./middleware/authenticate")
 const client = new OAuth2Client(config.client_id)
+const Razorpay = require("razorpay");
 
 const oauth2Client = new OAuth2(config.google_client_id, config.google_secret, `${config.url}/auth_callback`);
+
+let instance = new Razorpay({
+  key_id: config.razorpay_key_id, // your `KEY_ID`
+  key_secret: config.razorpay_secret // your `KEY_SECRET`
+})
 
 app.use(express.json())
 app.use(cookieParser())
@@ -50,6 +56,7 @@ hbs.registerHelper({
 app.use("/css", express.static(path.join(__dirname, './views/css')))
 app.use("/js", express.static(path.join(__dirname, './views/js')))
 app.use("/image", express.static(path.join(__dirname, './public/SarvamVyaptam.png')))
+app.use("/images", express.static(path.join(__dirname, './public/images')))
 app.use("/logo192.png", express.static(path.join(__dirname, './public/logo192.png')))
 app.use("/manifest.json", express.static(path.join(__dirname, './public/manifest.json')))
 app.use("/robots.txt", express.static(path.join(__dirname, './search_engine/robots.txt')))
@@ -389,7 +396,7 @@ app.get("/shop/:cate/:id", authenticate, async (req, res) => {
             ${val.stock === 0 ? `` : `${hi.indexOf(val.id) > -1 ? '<button type="submit" class="mt-1 mr-1 rounded shadow hover:shadow-md transition-shadow w-1/2 text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:opacity-90 text-lg">ADDED TO CART</button>' : `<button type="submit" class="mt-1 mr-1 rounded shadow hover:shadow-md transition-shadow w-1/2 text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:opacity-90 text-lg" onclick="add_to_cart()">ADD TO CART</button>`}
             <a
                 class="text-center mt-1 ml-1 rounded shadow hover:shadow-md transition-shadow w-1/2 text-white bg-green-500 border-0 py-2 px-6 focus:outline-none hover:opacity-90 text-lg"
-                href="/order?id=fortune-everyday-basmati-rice-long-grain-2kg&amp;quantity=1">BUY NOW</a>`}</div>
+                href="/order?id=${val.id}&quantity=" id="buy_now">BUY NOW</a>`}</div>
           </div>
           <div class="lg:flex-grow sm:mt-0 md:w-full md:block lg:pl-24 flex flex-col md:items-start text-left">
             <p class="font-medium text-gray-600 dark:text-slate-400 uppercase"><a
@@ -985,6 +992,142 @@ app.post("/remove", authenticate, async (req, res) => {
   catch {
     res.clearCookie("user")
   }
+})
+
+app.get("/order", authenticate, (req, res) => {
+  products.find({ id: req.query.id }).then((e) => {
+    if (e.length === 0) {
+      res.render("404", {
+        login: (req.rootUser === false ? 'nope' : req.rootUser)
+      })
+    }
+    else {
+      let regex = /^\d+$/;
+      if (req.query.quantity > 5) {
+        res.render("404", {
+          login: (req.rootUser === false ? 'nope' : req.rootUser)
+        })
+      }
+      else if (req.query.quantity > e[0].stock) {
+        res.render("404", {
+          login: (req.rootUser === false ? 'nope' : req.rootUser)
+        })
+      }
+      else if (regex.test(req.query.quantity)) {
+        res.render("buy", {
+          login: (req.rootUser === false ? 'nope' : req.rootUser),
+          title: e[0].name,
+          items: { quantity: req.query.quantity, item: e[0] }, total: (req.query.quantity * e[0].price), subTotal: (req.query.quantity * e[0].price),
+          link: `/payment?id=${req.query.id}&quantity=${req.query.quantity}`
+        })
+      }
+      else {
+        res.render("404", {
+          login: (req.rootUser === false ? 'nope' : req.rootUser)
+        })
+      }
+    }
+  })
+})
+
+app.post("/payment", authenticate, (req, res) => {
+  products.find({ id: req.query.id }).then((e) => {
+    if (e.length === 0) {
+      res.render("404", {
+        login: (req.rootUser === false ? 'nope' : req.rootUser)
+      })
+    }
+    else {
+      let regex = /^\d+$/;
+      if (req.query.quantity > 5) {
+        res.render("404", {
+          login: (req.rootUser === false ? 'nope' : req.rootUser)
+        })
+      }
+      else if (req.query.quantity > e[0].stock) {
+        res.render("404", {
+          login: (req.rootUser === false ? 'nope' : req.rootUser)
+        })
+      }
+      else if (regex.test(req.query.quantity)) {
+        var reg = /^\d+$/;
+        const shippingInput = req.body
+        if (shippingInput.phone !== "" && reg.test(shippingInput.phone) && String(shippingInput.phone).length === 10 && reg.test(shippingInput.pincode) && String(shippingInput.pincode).length === 6 && String(shippingInput.pincode).charAt(0) === '1' && String(shippingInput.pincode).charAt(1) === '1' && String(shippingInput.pincode).charAt(2) === '0' && shippingInput.district !== "-- Select --" && shippingInput.address !== "" && String(shippingInput.address).length >= 15) {
+          res.render("payment", {
+            login: (req.rootUser === false ? 'nope' : req.rootUser),
+            title: e[0].name,
+            items: { quantity: req.query.quantity, item: e[0] }, total: (req.query.quantity * e[0].price), subTotal: (req.query.quantity * e[0].price),
+            link: `/order?id=${req.query.id}&quantity=${req.query.quantity}`, phone: shippingInput.phone, id: req.query.id, quantity: req.query.quantity, phone: (req.rootUser.type === "Local" ? req.rootUser.phone : '')
+          })
+        }
+        else {
+          res.render("buy", {
+            login: (req.rootUser === false ? 'nope' : req.rootUser),
+            title: e[0].name,
+            items: { quantity: req.query.quantity, item: e[0] }, total: (req.query.quantity * e[0].price), subTotal: (req.query.quantity * e[0].price),
+            link: `/payment?id=${req.query.id}&quantity=${req.query.quantity}`, value: shippingInput, error: 'true', errorMsg: "Please fill the form correctly"
+          })
+        }
+      }
+      else {
+        res.render("404", {
+          login: (req.rootUser === false ? 'nope' : req.rootUser)
+        })
+      }
+    }
+  })
+})
+
+app.post("/pay", authenticate, (req, res) => {
+  products.find({ id: req.body.id }).then((e) => {
+    if (e.length === 0) {
+      res.send({ error: "bye" })
+    }
+    else {
+      let regex = /^\d+$/;
+      if (req.body.quantity > 5) {
+        res.send({ error: "bye" })
+      }
+      else if (req.body.quantity > e[0].stock) {
+        res.send({ error: "bye" })
+      }
+      else if (regex.test(req.body.quantity)) {
+        var params = {
+          amount: (req.body.quantity * e[0].price * 100),
+          currency: "INR",
+          receipt: "sarvavyaptam",
+          payment_capture: '1'
+        };
+        if (req.rootUser !== false) {
+          instance.orders.create(params).then((data) => {
+            var options = {
+              key: config.razorpay_key_id,  //Enter your razorpay key
+              currency: "INR",
+              name: `${req.rootUser.name}`,
+              description: "Welcome to Vidyavantam",
+              order_id: data.id,
+              theme: {
+                "color": "#0D94FB"
+              },
+              prefill: {
+                name: `${req.rootUser.name}`,
+                email: `${req.rootUser.email}`,
+                contact: `${req.body.phone}`
+              }
+            };
+            res.send({ options });
+          }).catch((error) => {
+            res.send({ "sub": error, "status": "failed" });
+          })
+        }
+      }
+      else {
+        res.render("404", {
+          login: (req.rootUser === false ? 'nope' : req.rootUser)
+        })
+      }
+    }
+  })
 })
 
 app.post("*", authenticate, (req, res) => {

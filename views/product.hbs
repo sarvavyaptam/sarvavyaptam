@@ -36,13 +36,17 @@
             document.getElementById('quantity').innerText = hi + 1
           }
         }
+        document.getElementById("buy_now").href = `/order?id=${link[0].id}&quantity=${Number(document.getElementById('quantity').innerText)}`
       }
     }
     function minus() {
       let hi = document.getElementById('quantity').innerText
       if(Number(hi) == 1){}
       else document.getElementById('quantity').innerText = Number(hi) - 1
+      document.getElementById("buy_now").href = `/order?id=${link[0].id}&quantity=${Number(document.getElementById('quantity').innerText)}`
     }
+    let link = {{{ json id }}}
+    document.getElementById("buy_now").href = `/order?id=${link[0].id}&quantity=${Number(document.getElementById('quantity').innerText)}`
     async function add_to_cart() {
       try {
         let sach = {{{ json id }}}

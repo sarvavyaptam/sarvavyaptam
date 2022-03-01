@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Sarvavyaptam - Best online store" />
+  <link rel="apple-touch-icon" href="/logo192.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>Sarvavyaptam - Buy {{title}}</title>
+  <link href="/css/style.css" rel="stylesheet">
+  {{#if_eq error 'true'}}
+  <style>
+    .MSG-Email {
+      width: 80%;
+      position: relative;
+      left: 50%;
+      transform: translate(-50%);
+      border-radius: 1px;
+      background: rgb(90, 155, 90);
+      color: white;
+    }
+
+    .MSG-Error {
+      width: 80%;
+      position: relative;
+      left: 50%;
+      transform: translate(-50%);
+      border-radius: 1px;
+      background: rgb(206, 50, 50);
+      color: white;
+    }
+
+    .fixed-Email {
+      position: fixed;
+      bottom: 40px;
+      width: 100%;
+      opacity: 1;
+      display: block;
+      z-index: 100000000000000000;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .fixed-Error {
+      position: fixed;
+      bottom: 40px;
+      width: 100%;
+      opacity: 1;
+      display: block;
+      z-index: 100000000000000000;
+      transition: all 0.2s ease-in-out;
+    }
+
+    #MSG-Fail {
+      opacity: 0;
+      transition: all 0.2s ease-in-out;
+    }
+  </style>
+  {{/if_eq}}
+</head>
+
+<body>
+  {{#if_eq login 'nope'}}
+  {{>nav}}
+  {{else}}
+  {{>navLogin name=login.name}}
+  {{/if_eq}}
+  <div class="bg-white dark:bg-gray-900" style="min-height: 80vh;">
+    <main class="mb-8 mt-5 bg-white dark:bg-gray-900">
+      <div class="container mx-auto px-6">
+        <div class="flex flex-col lg:flex-row mt-5">
+          <div class="w-full lg:w-1/2 order-2">
+            <h3 class="text-gray-700 text-2xl font-medium mb-2 dark:text-gray-200">Checkout</h3>
+            <div class="flex items-center mb-2"><button
+                class="flex text-sm dark:text-gray-200 text-gray-700 focus:outline-none"><span
+                  class="flex items-center justify-center text-white bg-blue-500 rounded-full h-5 w-5 mr-2">1</span>
+                Account</button><button
+                class="flex text-sm dark:text-gray-200 text-gray-700 focus:outline-none ml-8"><span
+                  class="flex items-center justify-center border-2 border-blue-500 rounded-full h-5 w-5 mr-2">2</span>
+                Shipping</button><button class="flex text-sm dark:text-gray-200 text-gray-700 focus:outline-none ml-8"
+                disabled=""><span
+                  class="flex items-center justify-center border-2 border-gray-500 rounded-full h-5 w-5 mr-2">3</span>
+                Payments</button></div>
+            <div>
+              <form action="{{{link}}}" method="post" class="flex flex-wrap -m-2">
+                <div class="p-2 w-full">
+                  <div class="relative"><label for="name"
+                      class="leading-7 text-sm text-gray-600 dark:text-gray-300">Mobile Number</label><input type="text" minlength="10" maxlength="10"
+                      name="phone" required="" id="name"
+                      class="dark:text-gray-300 dark:bg-gray-800 dark:border-gray-700  dark:focus:bg-gray-900 dark:focus:ring-indigo-900 w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:bg-white focus:ring-2 focus:ring-gray-700 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                      value="{{value.phone}}"></div>
+                </div>
+                <div class="p-2 w-full">
+                  <div class="relative"><label for="state"
+                      class="leading-7 text-sm text-gray-600 dark:text-gray-300">State</label><select type="text"
+                      name="state" required="" id="state"
+                      class="dark:text-gray-300 dark:bg-gray-800 dark:border-gray-700  dark:focus:bg-gray-900 dark:focus:ring-indigo-900 w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:bg-white focus:ring-2 focus:ring-gray-700 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                      <option>Delhi</option>
+                    </select></div>
+                </div>
+                <div class="p-2 w-full">
+                  <div class="relative"><label for="district"
+                      class="leading-7 text-sm text-gray-600 dark:text-gray-300">District</label><select type="text"
+                      name="district" id="district" required=""
+                      class="dark:text-gray-300 dark:bg-gray-800 dark:border-gray-700  dark:focus:bg-gray-900 dark:focus:ring-indigo-900 w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:bg-white focus:ring-2 focus:ring-gray-700 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                      <option>-- Select --</option>
+                      <option>Central Delhi</option>
+                      <option>South Delhi</option>
+                      <option>North Delhi</option>
+                      <option>West Delhi</option>
+                      <option>East Delhi</option>
+                      <option>North West Delhi</option>
+                      <option>South West Delhi</option>
+                      <option>North East Delhi</option>
+                      <option>South East Delhi</option>
+                      <option>Sadar Bazaar</option>
+                      <option>Canaught Place</option>
+                    </select></div>
+                </div>
+                <div class="p-2 w-full">
+                  <div class="relative"><label for="pincode"
+                      class="leading-7 text-sm text-gray-600 dark:text-gray-300">Pincode</label><input type="text"
+                      name="pincode" required="" minlength="6" maxlength="6" id="pincode"
+                      class="dark:text-gray-300 dark:bg-gray-800 dark:border-gray-700  dark:focus:bg-gray-900 dark:focus:ring-indigo-900 w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:bg-white focus:ring-2 focus:ring-gray-700 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                      value="{{value.pincode}}"></div>
+                </div>
+                <div class="p-2 w-full">
+                  <div class="relative"><label for="address"
+                      class="leading-7 text-sm text-gray-600 dark:text-gray-300">Full Address</label><textarea
+                      name="address" type="text" id="address" required="" minlength="15"
+                      class="dark:text-gray-300 dark:bg-gray-800 dark:border-gray-700  dark:focus:bg-gray-900 dark:focus:ring-indigo-900 w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:bg-white focus:ring-2 focus:ring-gray-700 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                      rows="2">{{value.address}}</textarea>
+                    <p class="text-sm text-gray-500">* Minimum length is 15</p>
+                  </div>
+                </div>
+                <div class="p-2 w-full"><button type="submit"
+                    class="flex text-white bg-gray-800 dark:bg-indigo-500 border-0 py-3 px-8 focus:outline-none dark:hover:bg-indigo-600 hover:bg-gray-900 rounded text-lg dark:disabled:bg-indigo-400 dark:hover:disabled:bg-indigo-400 disabled:bg-gray-500">Continue
+                    to Payment</button></div>
+              </form>
+            </div>
+          </div>
+          <div class="w-full mb-8 flex-shrink-0 order-1 lg:w-1/2 lg:mb-0 lg:order-2">
+            <div class="lg:flex justify-center lg:justify-end">
+              <div class="lg:max-w-md w-full">
+                <div
+                  class="lg:hidden cursor-pointer flex w-full border dark:border-slate-600 text-lg p-4 pl-8 pt-3 text-black dark:text-slate-200 text-left">
+                  <p class="text-left" style="flex: 0 0 90%;">Products</p>
+                  <p class="text-right" style="flex: 0 0 10%;">-</p>
+                </div>
+                <div>
+                  <div class="hidden">
+                    <div class="border dark:border-slate-500 rounded-md px-4 py-3 flex justify-between mt-3">
+                      <div class="flex"><img class="h-20 w-20 object-cover rounded" src="{{items.item.image}}" alt="..">
+                        <div class="mx-3">
+                          <h3 class="text-sm text-black dark:text-gray-300">{{items.item.name}} - {{items.item.price}}₹/-</h3>
+                          <p class="text-gray-700 dark:text-gray-400">Quantity - {{items.quantity}}</p>
+                          <p class="text-gray-700 dark:text-gray-400">Total - {{total}}₹</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="hidden lg:block">
+                    <div class="border dark:border-slate-500 rounded-md px-4 py-3 flex justify-between mt-3">
+                      <div class="flex"><img class="h-20 w-20 object-cover rounded" src="{{items.item.image}}" alt="..">
+                        <div class="mx-3">
+                          <h3 class="text-sm text-black dark:text-gray-300">{{items.item.name}} - {{items.item.price}}₹/-</h3>
+                          <p class="text-gray-700 dark:text-gray-400">Quantity - {{items.quantity}}</p>
+                          <p class="text-gray-700 dark:text-gray-400">Total - {{total}}₹</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <table class="w-full">
+                    <tbody class="table-auto w-full text-sm">
+                      <tr>
+                        <td class="pt-6 text-gray-700 dark:text-slate-400">Subtotal</td>
+                        <td class="pt-6 text-slate-600 text-right dark:text-slate-400">{{subTotal}} Rs.</td>
+                      </tr>
+                      <tr>
+                        <td class="pt-6 text-gray-700 dark:text-slate-400">Shipping Charge</td>
+                        <td class="pt-6 text-slate-600 text-right dark:text-slate-400">Calculate will be in payment step
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  {{#if_eq error 'true'}}
+  <div class="fixed-Error" id="error-added">
+    <div class="MSG-Error flex justify-center items-center">
+      <h5 class="text-xl text-center py-3 px-2">{{errorMsg}}</h5>
+      <h5 class="text-3xl cursor-pointer text-center py-3"
+        onclick="document.getElementById('error-added').style.opacity=0;document.getElementById('error-added').style.display='none'">
+        &times;</h5>
+    </div>
+  </div>
+  {{/if_eq}}
+  {{>footer}}
+</body>
+
+</html>
