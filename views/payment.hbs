@@ -143,9 +143,8 @@
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          orderCreationId: data.options.order_id, razorpayPaymentId: rest.razorpay_payment_id, razorpaySignature: rest.razorpay_signature, data: {
-            to: {{{ json id }}}
-            }
+          orderCreationId: data.options.order_id, razorpayPaymentId: rest.razorpay_payment_id, razorpaySignature: rest.razorpay_signature, data: {to: {{{ json id }}},quantity: {{{json quantity}}} },
+            shippingInput: {{{json shippingInput}}}
         })
       }).then((res) => {
         window.location.href = '/payment/success'

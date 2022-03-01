@@ -12,6 +12,7 @@ const google = require('googleapis').google;
 const OAuth2 = google.auth.OAuth2;
 const { OAuth2Client } = require('google-auth-library')
 const config = require("./config")
+const crypto = require("crypto")
 const authenticate = require("./middleware/authenticate")
 const client = new OAuth2Client(config.client_id)
 const Razorpay = require("razorpay");
@@ -1054,11 +1055,18 @@ app.post("/payment", authenticate, (req, res) => {
         var reg = /^\d+$/;
         const shippingInput = req.body
         if (shippingInput.phone !== "" && reg.test(shippingInput.phone) && String(shippingInput.phone).length === 10 && reg.test(shippingInput.pincode) && String(shippingInput.pincode).length === 6 && String(shippingInput.pincode).charAt(0) === '1' && String(shippingInput.pincode).charAt(1) === '1' && String(shippingInput.pincode).charAt(2) === '0' && shippingInput.district !== "-- Select --" && shippingInput.address !== "" && String(shippingInput.address).length >= 15) {
+          let shippingsInput = {
+            phone: shippingInput.phone,
+            pincode: shippingInput.pincode,
+            address: shippingInput.address,
+            district: shippingInput.district,
+            date: new Date().toDateString()
+          }
           res.render("payment", {
             login: (req.rootUser === false ? 'nope' : req.rootUser),
             title: e[0].name,
             items: { quantity: req.query.quantity, item: e[0] }, total: (req.query.quantity * e[0].price), subTotal: (req.query.quantity * e[0].price),
-            link: `/order?id=${req.query.id}&quantity=${req.query.quantity}`, phone: shippingInput.phone, id: req.query.id, quantity: req.query.quantity, phone: (req.rootUser.type === "Local" ? req.rootUser.phone : '')
+            link: `/order?id=${req.query.id}&quantity=${req.query.quantity}`, phone: shippingInput.phone, id: req.query.id, quantity: req.query.quantity, phone: (req.rootUser.type === "Local" ? req.rootUser.phone : ''), shippingInput: shippingsInput
           })
         }
         else {
@@ -1143,7 +1151,7 @@ app.post("/payment/success", authenticate, async (req, res) => {
         razorpayPaymentId,
         razorpayOrderId,
         razorpaySignature,
-        data
+        data, shippingInput
       } = req.body;
 
       const shasum = crypto.createHmac("sha256", config.razorpay_secret);
@@ -1152,8 +1160,8 @@ app.post("/payment/success", authenticate, async (req, res) => {
       const digest = shasum.digest("hex");
 
       if (digest !== razorpaySignature) { return res.status(400).json({ error: 400 }); }
-
-      await Users.updateOne({ email: req.rootUser.email }, { $push: { order: { to: data.to, complete: false } } })
+      shippingInput.status = "Ordered"
+      await Users.updateOne({ email: req.rootUser.email }, { $push: { order: { info: shippingInput, data: [{ to: data.to, quantity: Number(data.quantity) }] } } })
 
       res.status(200).json({
         msg: "success",
@@ -1162,6 +1170,7 @@ app.post("/payment/success", authenticate, async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error)
     res.status(500).send(error);
   }
 })
