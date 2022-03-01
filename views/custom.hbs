@@ -22,6 +22,56 @@
   {{>backtotop}}
   {{{chatemulae}}}
   {{>footer}}
+  <script>
+    function plus(stock, id, product_id) {
+      let hi = document.getElementById(id).innerText
+      hi = Number(hi)
+      if (hi <= 5) {
+        if (stock === hi) {
+
+        }
+        else {
+          if (hi >= 5) {
+            document.getElementById(id).innerText = 5
+            fetch("/plus", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: {
+                id: product_id, quantity: Number(document.getElementById(id).innerText)
+              }
+            }).then((e) => {
+              e.json().then((easy) => {
+                document.cookie = `user=${easy.cookie}; expires=${new Date(Date.now() + 10000000000)}; path=/`;
+              })
+            })
+          }
+          else {
+            document.getElementById(id).innerText = hi + 1
+            fetch("/plus", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                id: product_id, quantity: Number(document.getElementById(id).innerText)
+              })
+            }).then((e) => {
+              e.json().then((easy) => {
+                document.cookie = `user=${easy.cookie}; expires=${new Date(Date.now() + 10000000000)}; path=/`;
+              })
+            })
+          }
+        }
+      }
+    }
+    function minus(id) {
+      let hi = document.getElementById(id).innerText
+      if (Number(hi) == 1) { }
+      else document.getElementById(id).innerText = Number(hi) - 1
+    }
+  </script>
   <script src="/js/script.js"></script>
 </body>
 

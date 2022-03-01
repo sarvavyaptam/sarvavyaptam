@@ -751,7 +751,7 @@ app.get("/my-cart", authenticate, async (req, res) => {
                 }
               })
             })
-            let hi = like.map((val) => {
+            let hi = like.map((val, index) => {
               return `<div class="md:flex border px-4 my-4 py-4 border-t border-gray-300 dark:border-slate-700">
               <div class="md:w-2/12 w-full flex items-center"><img
                   src="${val.real.image}"
@@ -767,12 +767,12 @@ app.get("/my-cart", authenticate, async (req, res) => {
                   <div class="flex flex-col">
                   ${val.real.stock >= 1 ? `<div class="flex mb-2">
                       <div
-                        class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-l border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none">
+                        class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-l border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none" onclick="minus('${val.real.id}_${index}')">
                         -</div>
-                      <div class="2/4 p-1 px-8 border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200">
+                      <div class="2/4 p-1 px-8 border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200" id="${val.real.id}_${index}">
                         ${val.quantity}</div>
                       <div
-                        class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-t border -b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none">
+                        class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-t border -b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none" onclick="plus(${val.real.stock}, '${`${val.real.id}_${index}`}', '${index}')">
                         +</div>
                     </div>` : ``}
                     <div class="flex mt-2">
@@ -834,6 +834,22 @@ app.get("/my-cart", authenticate, async (req, res) => {
       res.render("custom", {
         login: (req.rootUser === false ? 'nope' : req.rootUser), search: req.query.q, chatemulae, title: "Your Cart"
       })
+    }
+  }
+  catch {
+    res.clearCookie("user")
+  }
+})
+
+app.post("/plus", authenticate, async (req, res) => {
+  try {
+    if (req.rootUser === false) {
+      if (req.cookies.user) {
+        let user = jwt.verify(req.cookies.user, config.secret_key)
+        user.cart[req.body.id].quantity = req.body.quantity
+        const users = jwt.sign({ cart: user.cart }, config.secret_key)
+        res.status(200).send({ cookie: users })
+      }
     }
   }
   catch {
