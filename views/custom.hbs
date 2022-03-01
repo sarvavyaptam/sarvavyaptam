@@ -23,7 +23,7 @@
   {{{chatemulae}}}
   {{>footer}}
   <script>
-    function plus(stock, id, product_id) {
+    function plus(stock, id, product_id, price) {
       let hi = document.getElementById(id).innerText
       hi = Number(hi)
       if (hi <= 5) {
@@ -36,6 +36,8 @@
           }
           else {
             document.getElementById(id).innerText = hi + 1
+            let total = document.getElementById("total_price")
+            total.innerText = Number(total.innerText) + price
             fetch("/plus", {
               method: "POST",
               headers: {
@@ -55,11 +57,13 @@
         }
       }
     }
-    function minus(id, index) {
+    function minus(id, index, price) {
       let hi = document.getElementById(id).innerText
       if (Number(hi) == 1) { }
       else {
         document.getElementById(id).innerText = Number(hi) - 1
+        let total = document.getElementById("total_price")
+        total.innerText = Number(total.innerText) - price
         fetch("/plus", {
           method: "POST",
           headers: {
@@ -92,7 +96,7 @@
           })
         }
         else {
-            window.location.reload()
+          window.location.reload()
         }
       })
     }

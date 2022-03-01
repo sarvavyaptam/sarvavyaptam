@@ -588,7 +588,7 @@ app.get("/search", authenticate, (req, res) => {
     if (list.length === 0) {
       chatemulae = `<div class="py-5 dark:h-96 dark:flex dark:align-middle dark:items-center dark:justify-center">
       <div class="flex justify-center align-middle items-center">
-        <img src=${`/images/noResultsFound.jpg`} class="dark:hidden block" alt="NoResults" />
+        <img data-src=${`/images/noResultsFound.jpg`} class="dark:hidden block" alt="NoResults" />
       </div>
       <h2 class="mt-1 dark:text-gray-400" style="font-size: 25px; display: block; width: 100%; text-align: center">Sorry we have 0 search results for '<b>${searchInput}</b>'.<br /> Try again with another specific search term
       </h2>
@@ -606,7 +606,7 @@ app.get("/search", authenticate, (req, res) => {
       let youList = lists.map((vals) => {
         return `<a href=${vals.category}/${vals.id} class="p-4 md:mb-2 w-full xs:w-1/2 lg:mb-0 lg:w-1/4 md:w-1/2 sm:w-1/2">
         <div class="hover:shadow-lg transition-shadow h-full border-2 border-gray-200 dark:border-gray-700 border-opacity-60 rounded-lg overflow-hidden">
-          <img class="w-full object-cover object-center" src=${vals.image}
+          <img class="w-full object-cover object-center" data-src=${vals.image}
             alt=${vals.name} />
           <div class="pt-6 pr-6 pl-6">
             <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1" style="text-transform: uppercase">CATEGORY - ${vals.category.replace(/-/g, " ")}</h2>
@@ -737,7 +737,7 @@ app.get("/my-cart", authenticate, async (req, res) => {
         products.find({ id: { $in: bsdk } }).then((e) => {
           if (e.length === 0) {
             let chatemulae = `<div class="flex justify-center items-center flex-col text-xl dark:text-slate-400 dark:bg-gray-900 w-full bg-white" style="height:100vh">
-            <img alt=".." src="/noAddToCart" class='dark:hidden block' />
+            <img alt=".." data-src="/noAddToCart" class='dark:hidden block' />
             No item is added to cart
           </div>`
             res.render("custom", {
@@ -753,10 +753,12 @@ app.get("/my-cart", authenticate, async (req, res) => {
                 }
               })
             })
+            let likeses = []
             let hi = like.map((val, index) => {
+              likeses.push({ price: val.real.price, quantity: val.quantity })
               return `<div class="md:flex border px-4 my-4 py-4 border-t border-gray-300 dark:border-slate-700">
               <div class="md:w-2/12 w-full flex items-center"><img
-                  src="${val.real.image}"
+              data-src="${val.real.image}"
                   alt="Black Leather Purse" style="width: 100%; max-width: 100%; height: auto;"></div>
               <div class="md:pl-3 w-full">
                 <div class="w-full mt-3">
@@ -769,12 +771,12 @@ app.get("/my-cart", authenticate, async (req, res) => {
                   <div class="flex flex-col">
                   ${val.real.stock >= 1 ? `<div class="flex mb-2">
                       <div
-                        class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-l border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none" onclick="minus('${val.real.id}_${index}')">
+                        class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-l border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none" onclick="minus('${val.real.id}_${index}', ${index}, ${val.real.price})">
                         -</div>
                       <div class="2/4 p-1 px-8 border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200" id="${val.real.id}_${index}">
                         ${val.quantity}</div>
                       <div
-                        class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-t border -b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none" onclick="plus(${val.real.stock}, '${`${val.real.id}_${index}`}', '${index}')">
+                        class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-t border -b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none" onclick="plus(${val.real.stock}, '${`${val.real.id}_${index}`}', ${index}, ${val.real.price})">
                         +</div>
                     </div>` : ``}
                     <div class="flex mt-2">
@@ -790,6 +792,11 @@ app.get("/my-cart", authenticate, async (req, res) => {
             </div>`
             })
             hi = hi.join("")
+            let kl = []
+            likeses.map((val) => {
+              kl.push(val.quantity * val.price)
+            })
+            let total = kl.reduce((a, b) => { return a + b })
             chatemulae = `<div class="container mx-auto">
             <div id="checkout">
               <div class="flex items-start lg:flex-row flex-col" id="cart">
@@ -804,7 +811,7 @@ app.get("/my-cart", authenticate, async (req, res) => {
                       <p class="lg:text-4xl text-3xl font-black leading-9 text-gray-800 dark:text-white">Summary</p>
                       <div class="flex items-center justify-between pt-16">
                         <p class="text-base leading-none text-gray-800 dark:text-white">Subtotal</p>
-                        <p class="text-base leading-none text-gray-800 dark:text-white">164 Rs.</p>
+                        <p class="text-base leading-none text-gray-800 dark:text-white"><span id="total_price">${total}</span> Rs.</p>
                       </div>
                     </div>
                     <div><a type="button"
@@ -823,7 +830,7 @@ app.get("/my-cart", authenticate, async (req, res) => {
       }
       else {
         let chatemulae = `<div class="flex justify-center items-center flex-col text-xl dark:text-slate-400 dark:bg-gray-900 w-full bg-white" style="height:100vh">
-      <img alt=".." src="/noAddToCart" class='dark:hidden block' />
+      <img alt=".." data-src="/noAddToCart" class='dark:hidden block' />
       No item is added to cart
     </div>`
         res.render("custom", {
@@ -839,7 +846,7 @@ app.get("/my-cart", authenticate, async (req, res) => {
       products.find({ id: { $in: hi } }).then((e) => {
         if (e.length === 0) {
           let chatemulae = `<div class="flex justify-center items-center flex-col text-xl dark:text-slate-400 dark:bg-gray-900 w-full bg-white" style="height:100vh">
-          <img alt=".." src="/noAddToCart" class='dark:hidden block' />
+          <img alt=".." data-src="/noAddToCart" class='dark:hidden block' />
           No item is added to cart
         </div>`
           res.render("custom", {
@@ -855,10 +862,12 @@ app.get("/my-cart", authenticate, async (req, res) => {
               }
             })
           })
+          let likeses = []
           let hi = like.map((val, index) => {
+            likeses.push({ price: val.real.price, quantity: val.quantity })
             return `<div class="md:flex border px-4 my-4 py-4 border-t border-gray-300 dark:border-slate-700">
             <div class="md:w-2/12 w-full flex items-center"><img
-                src="${val.real.image}"
+            data-src="${val.real.image}"
                 alt="Black Leather Purse" style="width: 100%; max-width: 100%; height: auto;"></div>
             <div class="md:pl-3 w-full">
               <div class="w-full mt-3">
@@ -871,12 +880,12 @@ app.get("/my-cart", authenticate, async (req, res) => {
                 <div class="flex flex-col">
                 ${val.real.stock >= 1 ? `<div class="flex mb-2">
                     <div
-                      class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-l border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none" onclick="minus('${val.real.id}_${index}', ${index})">
+                      class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-l border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none" onclick="minus('${val.real.id}_${index}', ${index}, ${val.real.price})">
                       -</div>
                     <div class="2/4 p-1 px-8 border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200" id="${val.real.id}_${index}">
                       ${val.quantity}</div>
                     <div
-                      class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-t border -b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none" onclick="plus(${val.real.stock}, '${`${val.real.id}_${index}`}', '${index}')">
+                      class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-t border -b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none" onclick="plus(${val.real.stock}, '${`${val.real.id}_${index}`}', ${index}, ${val.real.price})">
                       +</div>
                   </div>` : ``}
                   <div class="flex mt-2">
@@ -892,6 +901,11 @@ app.get("/my-cart", authenticate, async (req, res) => {
           </div>`
           })
           hi = hi.join("")
+          let kl = []
+          likeses.map((val) => {
+            kl.push(val.quantity * val.price)
+          })
+          let total = kl.reduce((a, b) => { return a + b })
           chatemulae = `<div class="container mx-auto">
           <div id="checkout">
             <div class="flex items-start lg:flex-row flex-col" id="cart">
@@ -906,7 +920,7 @@ app.get("/my-cart", authenticate, async (req, res) => {
                     <p class="lg:text-4xl text-3xl font-black leading-9 text-gray-800 dark:text-white">Summary</p>
                     <div class="flex items-center justify-between pt-16">
                       <p class="text-base leading-none text-gray-800 dark:text-white">Subtotal</p>
-                      <p class="text-base leading-none text-gray-800 dark:text-white">164 Rs.</p>
+                      <p class="text-base leading-none text-gray-800 dark:text-white"><span id="total_price">${total}</span> Rs.</p>
                     </div>
                   </div>
                   <div><a type="button"
@@ -942,7 +956,6 @@ app.post("/plus", authenticate, async (req, res) => {
     else {
       const hi = req.rootUser
       hi.cart[req.body.id].quantity = req.body.quantity
-      console.log(hi)
       Users.updateOne({ email: req.rootUser.email }, { cart: hi.cart }).then(e => { })
     }
   }
