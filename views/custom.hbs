@@ -33,19 +33,6 @@
         else {
           if (hi >= 5) {
             document.getElementById(id).innerText = 5
-            fetch("/plus", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: {
-                id: product_id, quantity: Number(document.getElementById(id).innerText)
-              }
-            }).then((e) => {
-              e.json().then((easy) => {
-                document.cookie = `user=${easy.cookie}; expires=${new Date(Date.now() + 10000000000)}; path=/`;
-              })
-            })
           }
           else {
             document.getElementById(id).innerText = hi + 1
@@ -58,18 +45,56 @@
                 id: product_id, quantity: Number(document.getElementById(id).innerText)
               })
             }).then((e) => {
-              e.json().then((easy) => {
-                document.cookie = `user=${easy.cookie}; expires=${new Date(Date.now() + 10000000000)}; path=/`;
-              })
+              if (e.status === 200) {
+                e.json().then((easy) => {
+                  document.cookie = `user=${easy.cookie}; expires=${new Date(Date.now() + 10000000000)}; path=/`;
+                })
+              }
             })
           }
         }
       }
     }
-    function minus(id) {
+    function minus(id, index) {
       let hi = document.getElementById(id).innerText
       if (Number(hi) == 1) { }
-      else document.getElementById(id).innerText = Number(hi) - 1
+      else {
+        document.getElementById(id).innerText = Number(hi) - 1
+        fetch("/plus", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            id: index, quantity: Number(document.getElementById(id).innerText)
+          })
+        }).then((e) => {
+          if (e.status === 200) {
+            e.json().then((easy) => {
+              document.cookie = `user=${easy.cookie}; expires=${new Date(Date.now() + 10000000000)}; path=/`;
+            })
+          }
+        })
+      }
+    }
+    function remove(id) {
+      fetch("/remove", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ id })
+      }).then((e) => {
+        if (e.status === 200) {
+          e.json().then((easy) => {
+            document.cookie = `user=${easy.cookie}; expires=${new Date(Date.now() + 10000000000)}; path=/`;
+            window.location.reload()
+          })
+        }
+        else {
+            window.location.reload()
+        }
+      })
     }
   </script>
   <script src="/js/script.js"></script>

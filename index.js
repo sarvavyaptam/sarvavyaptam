@@ -260,7 +260,8 @@ app.get('/auth_callback', authenticate, (req, res) => {
           error: `true`,
           errorMsg: `${err}`,
           input: {},
-          loginLink
+          loginLink,
+          login: (req.rootUser === false ? 'nope' : req.rootUser)
         })
       }
       else {
@@ -278,6 +279,7 @@ app.get('/auth_callback', authenticate, (req, res) => {
                     errorMsg: `User is registered as a local account`,
                     input: {},
                     loginLink,
+                    login: (req.rootUser === false ? 'nope' : req.rootUser)
                   })
                 }
                 else {
@@ -384,10 +386,10 @@ app.get("/shop/:cate/:id", authenticate, async (req, res) => {
                 data-src="${val.image}"
                 style="position: relative; left: 50%; transform: translate(-50%);"></div>
             <div class="flex flex-row mt-2 md:w-full pb-10">
-            ${hi.indexOf(val.id) > -1 ? '<button type="submit" class="mt-1 mr-1 rounded shadow hover:shadow-md transition-shadow w-1/2 text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:opacity-90 text-lg">ADDED TO CART</button>' : `<button type="submit" class="mt-1 mr-1 rounded shadow hover:shadow-md transition-shadow w-1/2 text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:opacity-90 text-lg" onclick="add_to_cart()">ADD TO CART</button>`}
+            ${val.stock === 0 ? `` : `${hi.indexOf(val.id) > -1 ? '<button type="submit" class="mt-1 mr-1 rounded shadow hover:shadow-md transition-shadow w-1/2 text-white bg-gray-500 border-0 py-2 px-6 focus:outline-none hover:opacity-90 text-lg">ADDED TO CART</button>' : `<button type="submit" class="mt-1 mr-1 rounded shadow hover:shadow-md transition-shadow w-1/2 text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:opacity-90 text-lg" onclick="add_to_cart()">ADD TO CART</button>`}
             <a
                 class="text-center mt-1 ml-1 rounded shadow hover:shadow-md transition-shadow w-1/2 text-white bg-green-500 border-0 py-2 px-6 focus:outline-none hover:opacity-90 text-lg"
-                href="/order?id=fortune-everyday-basmati-rice-long-grain-2kg&amp;quantity=1">BUY NOW</a></div>
+                href="/order?id=fortune-everyday-basmati-rice-long-grain-2kg&amp;quantity=1">BUY NOW</a>`}</div>
           </div>
           <div class="lg:flex-grow sm:mt-0 md:w-full md:block lg:pl-24 flex flex-col md:items-start text-left">
             <p class="font-medium text-gray-600 dark:text-slate-400 uppercase"><a
@@ -777,8 +779,7 @@ app.get("/my-cart", authenticate, async (req, res) => {
                     </div>` : ``}
                     <div class="flex mt-2">
                       ${val.real.stock >= 1 ? `<p class="text-xs leading-3 text-green-400">${val.real.stock} in Stock</p>` : `<p class="text-xs leading-3 text-red-400">Out of stock</p>`}
-                      <p class="text-xs leading-3 hover:underline text-red-500 pl-5 cursor-pointer">Remove
-                      </p>
+                      <p class="text-xs leading-3 hover:underline text-red-500 pl-5 cursor-pointer" onclick="remove(${index})">Remove</p>
                     </div>
                   </div>
                   <p class="title-font text-xl text-md dark:text-white text-gray-800 mb-3">₹${val.real.price} <span
@@ -831,8 +832,95 @@ app.get("/my-cart", authenticate, async (req, res) => {
       }
     }
     else {
-      res.render("custom", {
-        login: (req.rootUser === false ? 'nope' : req.rootUser), search: req.query.q, chatemulae, title: "Your Cart"
+      const hi = []
+      req.rootUser.cart.map((val) => {
+        hi.push(val.id)
+      })
+      products.find({ id: { $in: hi } }).then((e) => {
+        if (e.length === 0) {
+          let chatemulae = `<div class="flex justify-center items-center flex-col text-xl dark:text-slate-400 dark:bg-gray-900 w-full bg-white" style="height:100vh">
+          <img alt=".." src="/noAddToCart" class='dark:hidden block' />
+          No item is added to cart
+        </div>`
+          res.render("custom", {
+            login: (req.rootUser === false ? 'nope' : req.rootUser), search: req.query.q, chatemulae, title: "Your Cart"
+          })
+        }
+        else {
+          let like = []
+          e.map((val) => {
+            return req.rootUser.cart.map((vals) => {
+              if (vals.id === val.id) {
+                like.push({ real: val, quantity: vals.quantity })
+              }
+            })
+          })
+          let hi = like.map((val, index) => {
+            return `<div class="md:flex border px-4 my-4 py-4 border-t border-gray-300 dark:border-slate-700">
+            <div class="md:w-2/12 w-full flex items-center"><img
+                src="${val.real.image}"
+                alt="Black Leather Purse" style="width: 100%; max-width: 100%; height: auto;"></div>
+            <div class="md:pl-3 w-full">
+              <div class="w-full mt-3">
+                <div><a class="text-gray-800 text-lg dark:text-gray-300"
+                    href="/shop/${val.real.category}/${val.real.id}">${val.real.name}</a>
+                  <p class="text-slate-500 dark:text-gray-400 mt-2">${val.real.desc.length >= 200 ? `${val.real.desc.substring(0, 200)}...` : val.real.desc}</p>
+                </div>
+              </div>
+              <div class="md:flex justify-between pt-5">
+                <div class="flex flex-col">
+                ${val.real.stock >= 1 ? `<div class="flex mb-2">
+                    <div
+                      class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-l border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none" onclick="minus('${val.real.id}_${index}', ${index})">
+                      -</div>
+                    <div class="2/4 p-1 px-8 border-t border-b border-gray-300 dark:border-slate-600 dark:text-slate-200" id="${val.real.id}_${index}">
+                      ${val.quantity}</div>
+                    <div
+                      class="1/4 p-1 hover:bg-slate-100 px-4 cursor-pointer border-r border-t border -b border-gray-300 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-gray-600 select-none" onclick="plus(${val.real.stock}, '${`${val.real.id}_${index}`}', '${index}')">
+                      +</div>
+                  </div>` : ``}
+                  <div class="flex mt-2">
+                    ${val.real.stock >= 1 ? `<p class="text-xs leading-3 text-green-400">${val.real.stock} in Stock</p>` : `<p class="text-xs leading-3 text-red-400">Out of stock</p>`}
+                    <p class="text-xs leading-3 hover:underline text-red-500 pl-5 cursor-pointer" onclick="remove(${index})">Remove</p>
+                  </div>
+                </div>
+                <p class="title-font text-xl text-md dark:text-white text-gray-800 mb-3">₹${val.real.price} <span
+                    class="dark:text-gray-400 text-sm line-through">₹${val.real.cut}</span>
+                    <span class="text-sm rounded text-green-500">${Math.trunc(100 - ((val.real.price / val.real.cut) * 100))}% off</span></p>
+              </div>
+            </div>
+          </div>`
+          })
+          hi = hi.join("")
+          chatemulae = `<div class="container mx-auto">
+          <div id="checkout">
+            <div class="flex items-start lg:flex-row flex-col" id="cart">
+              <div class="w-full px-5 py-4 bg-white dark:bg-gray-900 overflow-y-hidden ">
+                <p class="lg:text-4xl text-3xl font-black leading-10 text-gray-800 dark:text-white pt-3">Shopping Cart
+                </p>
+                ${hi}
+              </div>
+              <div class="lg:w-96 px-5 py-4 w-full bg-gray-100 dark:bg-gray-600">
+                <div class="flex flex-col lg:px-8 md:px-7 px-4 py-7 justify-between overflow-y-auto">
+                  <div>
+                    <p class="lg:text-4xl text-3xl font-black leading-9 text-gray-800 dark:text-white">Summary</p>
+                    <div class="flex items-center justify-between pt-16">
+                      <p class="text-base leading-none text-gray-800 dark:text-white">Subtotal</p>
+                      <p class="text-base leading-none text-gray-800 dark:text-white">164 Rs.</p>
+                    </div>
+                  </div>
+                  <div><a type="button"
+                      class="text-center mt-4 text-base leading-none w-full py-5 bg-gray-800 border-gray-800 border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 text-white dark:hover:bg-gray-700"
+                      href="/my-cart/order">Checkout</a></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`
+          res.render("custom", {
+            login: (req.rootUser === false ? 'nope' : req.rootUser), search: req.query.q, chatemulae, title: "Your Cart"
+          })
+        }
       })
     }
   }
@@ -850,6 +938,35 @@ app.post("/plus", authenticate, async (req, res) => {
         const users = jwt.sign({ cart: user.cart }, config.secret_key)
         res.status(200).send({ cookie: users })
       }
+    }
+    else {
+      const hi = req.rootUser
+      hi.cart[req.body.id].quantity = req.body.quantity
+      console.log(hi)
+      Users.updateOne({ email: req.rootUser.email }, { cart: hi.cart }).then(e => { })
+    }
+  }
+  catch {
+    res.clearCookie("user")
+  }
+})
+
+app.post("/remove", authenticate, async (req, res) => {
+  try {
+    if (req.rootUser === false) {
+      if (req.cookies.user) {
+        let user = jwt.verify(req.cookies.user, config.secret_key)
+        user.cart.splice(req.body.id, 1)
+        const users = jwt.sign({ cart: user.cart }, config.secret_key)
+        res.status(200).send({ cookie: users })
+      }
+    }
+    else {
+      let user = req.rootUser
+      user.cart.splice(req.body.id, 1)
+      Users.updateOne({ email: req.rootUser.email }, { cart: user.cart }).then(e => {
+        res.status(202).send({ hi: "hi" })
+      })
     }
   }
   catch {
