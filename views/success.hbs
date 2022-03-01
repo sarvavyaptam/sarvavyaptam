@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Sarvavyaptam - Best online store" />
+  <link rel="apple-touch-icon" href="/logo192.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>Sarvavyaptam - Payment Succeed</title>
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+  {{#if_eq login 'nope'}}
+  {{>nav}}
+  {{else}}
+  {{>navLogin name=login.name}}
+  {{/if_eq}}
+  <div class="w-full min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
+    <div class="overflow-hidden sm:rounded-lg pb-8 bg-white dark:bg-gray-900">
+      <div class="text-center pt-8">
+        <svg fill="none" stroke="rgb(34 197 94)" width="100" class="mx-auto" viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z">
+        </svg>
+        <h1 class="text-6xl font-medium py-8 dark:text-gray-300">Payment Succeed</h1>
+        <p class="text-2xl pb-8 px-12 font-medium dark:text-gray-300">Your Payment was Successful and successfully
+          ordered your item(s)</p>
+        <a class="m-1 p-2 bg-blue-400 rounded text-white hover:bg-blue-500 transition-all" href="/shop">Shop More
+        </a>
+        <a class="m-1 p-2 bg-blue-400 rounded text-white hover:bg-blue-500 transition-all" href="/my-orders">Go to
+        My Orders</a>
+      </div>
+    </div>
+  </div>
+  {{>footer}}
+</body>
+
+</html>

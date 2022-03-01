@@ -61,6 +61,7 @@ app.use("/logo192.png", express.static(path.join(__dirname, './public/logo192.pn
 app.use("/manifest.json", express.static(path.join(__dirname, './public/manifest.json')))
 app.use("/robots.txt", express.static(path.join(__dirname, './search_engine/robots.txt')))
 app.use("/noAddToCart", express.static(path.join(__dirname, './public/noAddToCart.webp')))
+app.use("/favicon.ico", express.static(path.join(__dirname, './public/favicon.ico')))
 app.use("/20210527.jpg", express.static(path.join(__dirname, './search_engine/20210527.jpg')))
 app.use("/images/noResultsFound.jpg", express.static(path.join(__dirname, './search_engine/noResultsFound.jpg')))
 
@@ -1127,6 +1128,47 @@ app.post("/pay", authenticate, (req, res) => {
         })
       }
     }
+  })
+})
+
+app.post("/payment/success", authenticate, async (req, res) => {
+  try {
+    if (req.rootUser === false) {
+
+    }
+    else {
+      // getting the details back from our font-end
+      const {
+        orderCreationId,
+        razorpayPaymentId,
+        razorpayOrderId,
+        razorpaySignature,
+        data
+      } = req.body;
+
+      const shasum = crypto.createHmac("sha256", config.razorpay_secret);
+      shasum.update(`${orderCreationId}|${razorpayPaymentId}`);
+
+      const digest = shasum.digest("hex");
+
+      if (digest !== razorpaySignature) { return res.status(400).json({ error: 400 }); }
+
+      await Users.updateOne({ email: req.rootUser.email }, { $push: { order: { to: data.to, complete: false } } })
+
+      res.status(200).json({
+        msg: "success",
+        orderId: razorpayOrderId,
+        paymentId: razorpayPaymentId,
+      });
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+})
+
+app.get("/payment/success", authenticate, (req, res) => {
+  res.render("success", {
+    login: (req.rootUser === false ? 'nope' : req.rootUser)
   })
 })
 
